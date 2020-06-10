@@ -1,16 +1,10 @@
 // Thanks to https://keycode.info/ for helping so much with keycode assignments
 
+
+
 const absolute_height = 24;
 const body = document.getElementsByTagName("body")[0];
 const container = document.getElementById("container");
-
-function isStringKeyCode(keyCode) {
-    if (keyCode === 8 || keyCode === 9 || keyCode === 13 || (32 <= keyCode && keyCode <= 126)) {
-        return true;
-    } else {
-        return false;
-    }
-}
 
 function header(title, long = true) {
     const today = new Date(Date.now());
@@ -71,9 +65,11 @@ function header(title, long = true) {
     function pad_left(string, width = 2, padding = "0") {
         string = String(string).trim();
         width = parseInt(width);
+
         while (string.length < width) {
             string = padding + string;
         }
+
         return string;
     }
 
@@ -84,7 +80,7 @@ function header(title, long = true) {
 
     // Prepend spaces to title in order to centralize it
     title = title.trim();
-    for (let c = 0; c < parseInt(Math.floor((80 - title.length - 2), 2)); c++) {
+    for (let c = 0; c < Math.floor((80 - parseInt(title.length)) / 2); c++) {
         title = " " + title;
     }
 
@@ -109,7 +105,7 @@ ${title}`;
 
 
 var main_menu = {
-    header: function () { return header("SISTEMA ESTUDIANTIL COLEGIAL", true) },
+    header: function () { return header("SISTEMA ESTUDIANTIL COLEGIAL", true); },
 
     body: `
     MENU PRINCIPAL:
@@ -128,26 +124,27 @@ var main_menu = {
 
     footer: "Opcion deseada:",
 
-    handle_input: function (keyCode) {
-        keyCode = Number(keyCode);
-        switch (keyCode) {
-            case 50:
+    handle_input: function (key) {
+
+        switch (key) {
+            case "2":
                 current_menu = menu_2;
-                current_menu.handle_input(0);
+                current_menu.handle_input(null);
                 break;
-            case 53:
+            case "5":
                 current_menu = menu_5;
-                current_menu.handle_input(0);
+                current_menu.handle_input(null);
                 break;
             default:
-                let output = `${this.header()}\n${this.body}`;
-                // Add newlines until already at desired height
-                while (output.match(/\n/g).length < absolute_height - 4) {
-                    output += '\n';
-                }
-                output += this.footer;
+                let screen = `${this.header()}\n${this.body}`;
 
-                container.textContent = output;
+                // Add newlines until already at desired height
+                while (screen.match(/\n/g).length < absolute_height - 4) {
+                    screen += '\n';
+                }
+                screen += this.footer;
+
+                container.textContent = screen;
         }
 
     }
@@ -179,33 +176,36 @@ var menu_2 = {
 
     footer: `${" ".repeat(69)}[6=Pantalla\n${" ".repeat(70)}9=Fin    ]`,
 
-    handle_input: function (keyCode) {
+    handle_input: function (key) {
         let changed_menu = false;
 
         // If is not <Enter>
-        if (keyCode !== 13 && isStringKeyCode(keyCode)) {
+        if (typeof (key) === "string" && key !== "Enter") {
 
             // If <Backspace> is pressed
-            if (keyCode === 8) {
+            if (key === "Backspace" || key === "Delete") {
                 this.buffer = this.buffer.slice(0, -1);
             } else {
-                this.buffer += String.fromCharCode(keyCode);
+                this.buffer += key;
             }
 
             // Validate inputs and/or go on to next input
             switch (this.current_operation) {
                 case 0:
+                    // lines[0] = buffer + " " * (12 - len(buffer))
                     this.lines[0] = this.buffer + " ".repeat(12 - this.buffer.length);
+
 
                     if (this.buffer.length === 9) {
 
                         if (this.buffer.match(/^\d{9}$/g)) {
                             this.lines[0] = `(${this.buffer.slice(0, 3)})${this.buffer.slice(3, 5)}-${this.buffer.slice(5, 10)}`
-                            this.current_operation = 1;
                             this.buffer = ""
+                            this.current_operation = 1;
                         } else {
                             this.buffer = "";
                             this.lines[0] = "_".repeat(12)
+                            // DATOS ENTRADOS NO SON CORRECTOS
                         }
                     }
                     break;
@@ -240,7 +240,7 @@ var menu_2 = {
 
             }
 
-        } else if (keyCode === 13 && this.buffer === "9") {
+        } else if (key === "Enter" && this.buffer === "9") {
             current_menu = main_menu;
             current_menu.handle_input(0);
             changed_menu = true;
@@ -256,6 +256,7 @@ var menu_2 = {
             // if not, we can update the screen
         } else {
             let output = `${this.header()}\n${this.body()}`;
+
             // Add newlines until already at desired height
             while (output.match(/\n/g).length < absolute_height - 4) {
                 output += '\n';
@@ -268,6 +269,7 @@ var menu_2 = {
     }
 
 };
+
 
 var menu_5 = {
     header: function () { return header("SISTEMA ESTUDIANTIL COLEGIAL", true) },
@@ -289,22 +291,23 @@ var menu_5 = {
 
     footer: "Opcion deseada:",
 
-    handle_input: function (keyCode) {
-        keyCode = Number(keyCode);
-        switch (keyCode) {
-            case 48:
+    handle_input: function (key) {
+        switch (key) {
+            case "0":
                 current_menu = main_menu;
-                current_menu.handle_input(0);
+                current_menu.handle_input(null);
                 break;
             default:
-                let output = `${this.header()}\n${this.body}`;
-                // Add newlines until already at newline
-                while (output.match(/\n/g).length < absolute_height - 4) {
-                    output += '\n';
-                }
-                output += this.footer;
+                // let screen = this.header() + "\n" + this.body;
+                let screen = `${this.header()}\n${this.body}`;
 
-                container.textContent = output;
+                // Add newlines until already at newline
+                while (screen.match(/\n/g).length < absolute_height - 4) {
+                    screen += '\n';
+                }
+                screen += this.footer;
+
+                container.textContent = screen;
         }
 
     }
@@ -313,8 +316,9 @@ var menu_5 = {
 
 
 document.addEventListener("keydown", function (event) {
-    current_menu.handle_input(event.keyCode);
+    current_menu.handle_input(event.key);
 });
 
+
 var current_menu = main_menu;
-current_menu.handle_input(0);
+current_menu.handle_input(null);
