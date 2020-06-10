@@ -1,11 +1,24 @@
-// Thanks to https://keycode.info/ for helping so much with keycode assignments
-
-
-
+/***
+ *      _____              __            __        ____      _   __         _      __   __
+ *     / ___/__  ___  ___ / /____ ____  / /____   / __/___  | | / /__ _____(_)__ _/ /  / /__ ___
+ *    / /__/ _ \/ _ \(_-</ __/ _ `/ _ \/ __(_-<   > _/_ _/  | |/ / _ `/ __/ / _ `/ _ \/ / -_|_-<
+ *    \___/\___/_//_/___/\__/\_,_/_//_/\__/___/  |_____/    |___/\_,_/_/ /_/\_,_/_.__/_/\__/___/
+ *
+ */
 const absolute_height = 24;
 const body = document.getElementsByTagName("body")[0];
 const container = document.getElementById("container");
 
+var selected_term = "";
+
+
+/***
+ *       __ __    __               ____              __  _
+ *      / // /__ / /__  ___ ____  / __/_ _____  ____/ /_(_)__  ___  ___
+ *     / _  / -_) / _ \/ -_) __/ / _// // / _ \/ __/ __/ / _ \/ _ \(_-<
+ *    /_//_/\__/_/ .__/\__/_/   /_/  \_,_/_//_/\__/\__/_/\___/_//_/___/
+ *              /_/
+ */
 function header(title, long = true) {
     const today = new Date(Date.now());
     const year = today.getFullYear();
@@ -79,10 +92,7 @@ function header(title, long = true) {
     minutes = pad_left(minutes);
 
     // Prepend spaces to title in order to centralize it
-    title = title.trim();
-    for (let c = 0; c < Math.floor((80 - parseInt(title.length)) / 2); c++) {
-        title = " " + title;
-    }
+    title = " ".repeat((80 - title.length) / 2) + title.trim();
 
     // Compose time and date
     const time = `${hours}:${minutes} ${am_pm}`;
@@ -103,7 +113,41 @@ ${title}`;
 
 }
 
+function display(object, desired_height) {
 
+    let screen = "";
+
+    if (typeof (object.body) === "function") {
+        screen = `${object.header()}\n${object.body()}`;
+
+    } else if (typeof (object.body) === "string") {
+        screen = `${object.header()}\n${object.body}`;
+    }
+
+    // Add newlines until already at desired height
+    while (screen.match(/\n/g).length < desired_height) {
+        screen += '\n';
+    }
+
+    if (typeof (object.footer) === "function") {
+        screen += object.footer();
+
+    } else if (typeof (object.footer) === "string") {
+        screen += object.footer;
+    }
+
+
+    container.textContent = screen;
+}
+
+
+/***
+ *       ____                       ____  __     _         __
+ *      / __/__________ ___ ___    / __ \/ /    (_)__ ____/ /____
+ *     _\ \/ __/ __/ -_) -_) _ \  / /_/ / _ \  / / -_) __/ __(_-<
+ *    /___/\__/_/  \__/\__/_//_/  \____/_.__/_/ /\__/\__/\__/___/
+ *                                         |___/
+ */
 var main_menu = {
     header: function () { return header("SISTEMA ESTUDIANTIL COLEGIAL", true); },
 
@@ -124,32 +168,33 @@ var main_menu = {
 
     footer: "Opcion deseada:",
 
+    refresh: function () { this.handle_input(null); },
+
     handle_input: function (key) {
 
         switch (key) {
             case "2":
                 current_menu = menu_2;
-                current_menu.handle_input(null);
+                current_menu.refresh();
                 break;
             case "5":
                 current_menu = menu_5;
-                current_menu.handle_input(null);
+                current_menu.refresh();
                 break;
             default:
-                let screen = `${this.header()}\n${this.body}`;
-
-                // Add newlines until already at desired height
-                while (screen.match(/\n/g).length < absolute_height - 4) {
-                    screen += '\n';
-                }
-                screen += this.footer;
-
-                container.textContent = screen;
+                display(this, absolute_height - 4);
         }
 
     }
 };
 
+/***
+ *             __  ___                ___
+ *            /  |/  /__ ___  __ __  |_  |
+ *           / /|_/ / -_) _ \/ // / / __/
+ *          /_/  /_/\__/_//_/\_,_/ /____/
+ *
+ */
 var menu_2 = {
     lines: Array(4).fill("____________"),
     current_operation: 0,
@@ -176,6 +221,8 @@ var menu_2 = {
 
     footer: `${" ".repeat(69)}[6=Pantalla\n${" ".repeat(70)}9=Fin    ]`,
 
+    refresh: function () { this.handle_input(null); },
+
     handle_input: function (key) {
         let changed_menu = false;
 
@@ -185,7 +232,9 @@ var menu_2 = {
             // If <Backspace> is pressed
             if (key === "Backspace" || key === "Delete") {
                 this.buffer = this.buffer.slice(0, -1);
-            } else {
+
+                // Exclude any other keys like <AltGr> and such from being added to buffer
+            } else if (key.length === 1) {
                 this.buffer += key;
             }
 
@@ -228,8 +277,8 @@ var menu_2 = {
                     if (this.buffer.length === 8) {
 
                         if (this.buffer.match(/^\d{8}$/g)) {
-                            current_menu = main_menu;
-                            current_menu.handle_input(0);
+                            current_menu = term_selection;
+                            current_menu.refresh();
                             changed_menu = true;
                         } else {
                             this.buffer = "";
@@ -255,22 +304,98 @@ var menu_2 = {
 
             // if not, we can update the screen
         } else {
-            let output = `${this.header()}\n${this.body()}`;
-
-            // Add newlines until already at desired height
-            while (output.match(/\n/g).length < absolute_height - 4) {
-                output += '\n';
-            }
-            output += this.footer;
-
-            container.textContent = output;
+            display(this, absolute_height - 4);
         }
 
     }
 
 };
 
+var term_selection = {
+    header: function () { return header("S E L E C C I Ó N  D E  S E C C I O N E S", true) },
 
+    body: ``,
+
+    footer: `Indique Semestre  1=1er Sem,   2=2do Sem,   3=1er Verano o Verano Extendido
+                  S=salir`,
+
+    refresh: function () { this.handle_input(null); },
+
+    handle_input: function (key) {
+        switch (key) {
+            case "S":
+            case "s":
+                current_menu = main_menu;
+                current_menu.refresh();
+                break;
+            case "1":
+                selected_term = "1er Sem"
+                current_menu = course_selection;
+                current_menu.refresh();
+                break;
+            case "2":
+                selected_term = "2do Sem"
+                current_menu = course_selection;
+                current_menu.refresh();
+                break;
+            case "3":
+                selected_term = "1er Verano"
+                current_menu = course_selection;
+                current_menu.refresh();
+                break;
+            default:
+                display(this, absolute_height - 2);
+        }
+
+    }
+};
+
+var course_selection = {
+    header: function () { return header(`SELECCIÓN DE SECCIONES ${selected_term} ESTUDIANTE`, false) },
+
+    body: `${menu_2.lines[0].trim()}  JUAN DEL PUEBLO RODRÍGUEZ        0507-1  23 10/ago/2019 Crs. TTY
+                                                           2:00 pm    21   04
+     C U R S O   Sección  Cr. Grado
+ 1.  ICOM 4015     100H    4    S   █
+ 2.  ICOM 4015 L   050L             █
+ 3.
+ 4.
+ 5.
+ 6.
+ 7.
+ 8.
+ 9.
+10.
+11.
+12.`,
+
+    footer: `Indique:   A=Alta  B=Baja  C=Cambio  L=ListaEspera  H=HorEst  p=EvalúoPago
+           M=MatEvalúo  F=HorEstGráfico  O=CódigoReservar S=Salir`,
+
+    refresh: function () { this.handle_input(null); },
+
+    handle_input: function (key) {
+        switch (key) {
+            case "S":
+            case "s":
+                current_menu = main_menu;
+                current_menu.refresh();
+                break;
+            default:
+                display(this, absolute_height - 4);
+        }
+
+    }
+
+}
+
+/***
+ *             __  ___                ____
+ *            /  |/  /__ ___  __ __  / __/
+ *           / /|_/ / -_) _ \/ // / /__ \
+ *          /_/  /_/\__/_//_/\_,_/ /____/
+ *
+ */
 var menu_5 = {
     header: function () { return header("SISTEMA ESTUDIANTIL COLEGIAL", true) },
 
@@ -291,29 +416,29 @@ var menu_5 = {
 
     footer: "Opcion deseada:",
 
+    refresh: function () { this.handle_input(null); },
+
     handle_input: function (key) {
         switch (key) {
             case "0":
                 current_menu = main_menu;
-                current_menu.handle_input(null);
+                current_menu.refresh();
                 break;
             default:
-                // let screen = this.header() + "\n" + this.body;
-                let screen = `${this.header()}\n${this.body}`;
-
-                // Add newlines until already at newline
-                while (screen.match(/\n/g).length < absolute_height - 4) {
-                    screen += '\n';
-                }
-                screen += this.footer;
-
-                container.textContent = screen;
+                display(this, absolute_height - 4);
         }
 
     }
 };
 
 
+/***
+ *       __ __             __                 __  ____          __       ___  ____        _      __
+ *      / // /__ ___ _____/ /_  ___ ____  ___/ / / __/__  __ __/ / ___  / _/ / __/_______(_)__  / /_
+ *     / _  / -_) _ `/ __/ __/ / _ `/ _ \/ _  / _\ \/ _ \/ // / / / _ \/ _/ _\ \/ __/ __/ / _ \/ __/
+ *    /_//_/\__/\_,_/_/  \__/  \_,_/_//_/\_,_/ /___/\___/\_,_/_/  \___/_/  /___/\__/_/ /_/ .__/\__/
+ *                                                                                      /_/
+ */
 
 document.addEventListener("keydown", function (event) {
     current_menu.handle_input(event.key);
@@ -321,4 +446,4 @@ document.addEventListener("keydown", function (event) {
 
 
 var current_menu = main_menu;
-current_menu.handle_input(null);
+current_menu.refresh();
