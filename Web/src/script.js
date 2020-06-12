@@ -184,10 +184,29 @@ var main_menu = {
     handle_input: function (key) {
 
         switch (key) {
+            case "1":
+                current_menu = main_menu_default;
+                main_menu_default.message_key = 1;
+                current_menu.refresh();
+                break;
+
             case "2":
                 current_menu = menu_2;
                 current_menu.refresh();
                 break;
+
+            case "3":
+                current_menu = main_menu_default;
+                main_menu_default.message_key = 3;
+                current_menu.refresh();
+                break;
+
+            case "4":
+                current_menu = main_menu_default;
+                main_menu_default.message_key = 4;
+                current_menu.refresh();
+                break;
+
             case "5":
                 current_menu = menu_5;
                 current_menu.refresh();
@@ -197,6 +216,52 @@ var main_menu = {
         }
 
     }
+};
+
+
+var main_menu_default = {
+    message_key: 3,
+    messages: {
+        "1": ` leer y ver información       <span class='white-background'>!</span>
+       <span class='white-background'>!</span>                                                                      <span class='white-background'>!</span>
+       <span class='white-background'>!</span>          de su correo electrónico dándole click a "Gmail"            <span class='white-background'>!</span>`,
+
+        "4": ` leer y ver información       <span class='white-background'>!</span>
+       <span class='white-background'>!</span>                                                                      <span class='white-background'>!</span>
+       <span class='white-background'>!</span>          de su correo electrónico dándole click a "Gmail"            <span class='white-background'>!</span>`,
+
+        "3": `modificar su código de        <span class='white-background'>!</span>
+       <span class='white-background'>!</span>                                                                      <span class='white-background'>!</span>
+       <span class='white-background'>!</span>      acceso permanente dándole click a "My Profile" y luego al       <span class='white-background'>!</span>
+       <span class='white-background'>!</span>                                                                      <span class='white-background'>!</span>
+       <span class='white-background'>!</span>             botón etiquetado "PIN" en la barra superior              <span class='white-background'>!</span>`
+    },
+
+    header: function () { return header("SISTEMA ESTUDIANTIL COLEGIAL", true); },
+
+    body: function () {
+        return `
+       <span class='white-background'>!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!</span>
+       <span class='white-background'>!</span>                                                                      <span class='white-background'>!</span>
+       <span class='white-background'>!</span>         Esta opción no está disponible a través de PuTTY             <span class='white-background'>!</span>
+       <span class='white-background'>!</span>                                                                      <span class='white-background'>!</span>
+       <span class='white-background'>!</span>   Si desea realizar esta operación vaya a <a href="https://home.uprm.edu">https://home.uprm.edu</a> y    <span class='white-background'>!</span>
+       <span class='white-background'>!</span>                                                                      <span class='white-background'>!</span>
+       <span class='white-background'>!</span>      Una vez ingrese a su cuenta podrá ${this.messages[this.message_key]}
+       <span class='white-background'>!</span>                                                                      <span class='white-background'>!</span>
+       <span class='white-background'>!</span>                                                                      <span class='white-background'>!</span>
+       <span class='white-background'>!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!</span>`
+    },
+
+    footer: " ".repeat(22) + "&lt;&lt;Presione cualquier tecla para salir&gt;&gt;",
+
+    refresh: function () { display(this, absolute_height - 4); },
+
+    handle_input: function (key) {
+        current_menu = main_menu;
+        current_menu.refresh();
+    }
+
 };
 
 /***
@@ -458,7 +523,7 @@ document.addEventListener("keydown", function (event) {
 });
 
 
-var current_menu = main_menu;
+var current_menu = main_menu_default;
 current_menu.refresh();
 
 

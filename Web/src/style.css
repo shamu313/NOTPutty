@@ -1,5 +1,10 @@
+@font-face{
+    font-family: "Consolas";
+    src: url("../assets/Consolas.ttf");
+}
+
 * {
-    font-family: Consolas;
+    font-family: "Consolas";
     font-size: 16px;
 
     background-color: #111111;
