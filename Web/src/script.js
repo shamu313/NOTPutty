@@ -20,6 +20,7 @@ const enrollment_dates = {
 
 var selected_term = "";
 var credits_selected = 0;
+var student_number = "";
 
 
 /***
@@ -327,6 +328,7 @@ var menu_2 = {
                             this.lines[0] = `(${this.buffer.slice(0, 3)})${this.buffer.slice(3, 5)}-${this.buffer.slice(5, 10)}`
                             this.buffer = ""
                             this.current_operation = 1;
+                            student_number = this.lines[0].trim();
                         } else {
                             this.buffer = "";
                             this.lines[0] = "_".repeat(12)
@@ -375,6 +377,7 @@ var menu_2 = {
 
         // If the menu was changed throughout the previous processes ...
         if (changed_menu) {
+            student_number = this.lines[0].trim();
             this.lines = Array(4).fill("____________");
             this.current_operation = 0;
             this.buffer = "";
@@ -430,7 +433,8 @@ var term_selection = {
 var course_selection = {
     header: function () { return header(`SELECCIÓN DE SECCIONES ${selected_term} ESTUDIANTE`, false) },
 
-    body: `${menu_2.lines[0].trim()}  JUAN DEL PUEBLO RODRÍGUEZ        0000-0  00 ${enrollment_dates[selected_term]} Crs. TTY
+    body: function () {
+        return ` ${student_number}  JUAN DEL PUEBLO RODRÍGUEZ       0000-0  00 ${enrollment_dates[selected_term]} Crs. TTY
                                                            2:00 pm    ${credits_selected}   04
      C U R S O   Sección  Cr. Grado
  1.  ICOM 4015     100H    4    S   █
@@ -444,7 +448,8 @@ var course_selection = {
  9.
 10.
 11.
-12.`,
+12.`;
+    },
 
     footer: `Indique:   A=Alta  B=Baja  C=Cambio  L=ListaEspera  H=HorEst  p=EvalúoPago
            M=MatEvalúo  F=HorEstGráfico  O=CódigoReservar S=Salir`,
@@ -523,7 +528,7 @@ document.addEventListener("keydown", function (event) {
 });
 
 
-var current_menu = main_menu_default;
+var current_menu = main_menu;
 current_menu.refresh();
 
 
