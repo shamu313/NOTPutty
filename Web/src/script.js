@@ -1,3 +1,6 @@
+// Thanks to http://patorjk.com/software/taag/ for the ASCII art
+
+
 /***
  *      _____              __            __        ____      _   __         _      __   __
  *     / ___/__  ___  ___ / /____ ____  / /____   / __/___  | | / /__ _____(_)__ _/ /  / /__ ___
@@ -8,8 +11,15 @@
 const absolute_height = 24;
 const body = document.getElementsByTagName("body")[0];
 const container = document.getElementById("container");
+const input = document.getElementsByTagName("input")[0];
+const enrollment_dates = {
+    "1er Sem": "4/may/2019",
+    "2do Sem": "23/nov/2019",
+    "1er Verano": "4/may/2019"
+}
 
 var selected_term = "";
+var credits_selected = 0;
 
 
 /***
@@ -118,6 +128,7 @@ function display(object, desired_height) {
     let screen = "";
 
     if (typeof (object.body) === "function") {
+        // screen = object.header() + "\n" + object.body()
         screen = `${object.header()}\n${object.body()}`;
 
     } else if (typeof (object.body) === "string") {
@@ -137,7 +148,7 @@ function display(object, desired_height) {
     }
 
 
-    container.textContent = screen;
+    container.innerHTML = screen;
 }
 
 
@@ -258,6 +269,7 @@ var menu_2 = {
                         }
                     }
                     break;
+
                 case 1:
                 case 2:
                     if (this.buffer.length === 4) {
@@ -312,9 +324,9 @@ var menu_2 = {
 };
 
 var term_selection = {
-    header: function () { return header("S E L E C C I Ó N  D E  S E C C I O N E S", true) },
+    header: function () { return header("S E L E C C I Ó N  D E  S E C C I O N E S", true); },
 
-    body: ``,
+    body: "",
 
     footer: `Indique Semestre  1=1er Sem,   2=2do Sem,   3=1er Verano o Verano Extendido
                   S=salir`,
@@ -329,17 +341,17 @@ var term_selection = {
                 current_menu.refresh();
                 break;
             case "1":
-                selected_term = "1er Sem"
+                selected_term = "1er Sem";
                 current_menu = course_selection;
                 current_menu.refresh();
                 break;
             case "2":
-                selected_term = "2do Sem"
+                selected_term = "2do Sem";
                 current_menu = course_selection;
                 current_menu.refresh();
                 break;
             case "3":
-                selected_term = "1er Verano"
+                selected_term = "1er Verano";
                 current_menu = course_selection;
                 current_menu.refresh();
                 break;
@@ -353,8 +365,8 @@ var term_selection = {
 var course_selection = {
     header: function () { return header(`SELECCIÓN DE SECCIONES ${selected_term} ESTUDIANTE`, false) },
 
-    body: `${menu_2.lines[0].trim()}  JUAN DEL PUEBLO RODRÍGUEZ        0507-1  23 10/ago/2019 Crs. TTY
-                                                           2:00 pm    21   04
+    body: `${menu_2.lines[0].trim()}  JUAN DEL PUEBLO RODRÍGUEZ        0000-0  00 ${enrollment_dates[selected_term]} Crs. TTY
+                                                           2:00 pm    ${credits_selected}   04
      C U R S O   Sección  Cr. Grado
  1.  ICOM 4015     100H    4    S   █
  2.  ICOM 4015 L   050L             █
@@ -378,7 +390,7 @@ var course_selection = {
         switch (key) {
             case "S":
             case "s":
-                current_menu = main_menu;
+                current_menu = term_selection;
                 current_menu.refresh();
                 break;
             default:
@@ -442,8 +454,29 @@ var menu_5 = {
 
 document.addEventListener("keydown", function (event) {
     current_menu.handle_input(event.key);
+    input.value = "";
 });
 
 
 var current_menu = main_menu;
 current_menu.refresh();
+
+
+/*
+
+object.body = `         <span class='white-background'>****************************************************************</span>
+         <span class='white-background'>*</span>                                                              <span class='white-background'>*</span>
+         <span class='white-background'>*</span>                                                              <span class='white-background'>*</span>
+         <span class='white-background'>*</span>                                                              <span class='white-background'>*</span>
+         <span class='white-background'>*</span>    Su TURNO  para  seleccion  de  cursos  y  secciones  o    <span class='white-background'>*</span>
+         <span class='white-background'>*</span>                                                              <span class='white-background'>*</span>
+         <span class='white-background'>*</span>    las  fechas   de  los  examenes  finales   los  podran    <span class='white-background'>*</span>
+         <span class='white-background'>*</span>                                                              <span class='white-background'>*</span>
+         <span class='white-background'>*</span>    ver a traves de  Mi Portal Colegial  en  home.uprm.edu    <span class='white-background'>*</span>
+         <span class='white-background'>*</span>                                             -------------    <span class='white-background'>*</span>
+         <span class='white-background'>*</span>                                                              <span class='white-background'>*</span>
+         <span class='white-background'>*</span>                                                              <span class='white-background'>*</span>
+         <span class='white-background'>*</span>                                                              <span class='white-background'>*</span>
+         <span class='white-background'>*</span>                                                              <span class='white-background'>*</span>
+         <span class='white-background'>****************************************************************</span>`;
+         */
