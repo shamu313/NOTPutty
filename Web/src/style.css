@@ -32,6 +32,7 @@ input:focus {
   color: #111111;
   border: none;
 }
+
 /* speciifcations for Small Tablets (iPad) */
 @media screen and (min-width: 768px) and (max-width: 1024px) {
   * {
@@ -41,7 +42,7 @@ input:focus {
   }
 }
 /* specifications for Big Tablets (iPad Pro) */
-@media screen and (min-width: 1024px) and (max-width: 1366px) {
+@media screen and (min-width: 1024px){
   * {
     font-size: 23px;
     margin: 2px;
