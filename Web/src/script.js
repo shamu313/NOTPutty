@@ -16,7 +16,7 @@ const enrollment_dates = {
     "1er Sem": "4/may/2019",
     "2do Sem": "23/nov/2019",
     "1er Verano": "4/may/2019"
-}
+};
 
 var selected_term = "";
 var credits_selected = 0;
@@ -521,6 +521,13 @@ var menu_5 = {
  *    /_//_/\__/\_,_/_/  \__/  \_,_/_//_/\_,_/ /___/\___/\_,_/_/  \___/_/  /___/\__/_/ /_/ .__/\__/
  *                                                                                      /_/
  */
+
+if (window.innerWidth <= window.innerHeight) {
+    input.addEventListener("input", function (event) {
+        current_menu.handle_input(input.value);
+        input.value = "";
+    });
+}
 
 document.addEventListener("keydown", function (event) {
     current_menu.handle_input(event.key);

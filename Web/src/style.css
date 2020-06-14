@@ -3,7 +3,7 @@
   src: url("../assets/Consolas.ttf");
 }
 
-* {
+body {
   font-family: "Consolas";
   font-size: 1.5vw;
   margin: 1vw;
@@ -12,6 +12,10 @@
   color: #eeeeee;
 
   padding: 0;
+}
+
+a{
+  color: #eeeeee;
 }
 
 .white-background {
@@ -34,7 +38,7 @@ input:focus {
 }
 
 @media only screen and (orientation: portrait) {
-  * {
-    font-size: 2.185vw;
+  body {
+    font-size: 2.1vw;
   }
 }

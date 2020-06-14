@@ -11,11 +11,11 @@ if os.path.isfile("courses.json"):
 headers = {'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_10_1) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/39.0.2171.95 Safari/537.36'}
 DEBUG = True
 
-#     ____     __                   _  __            __      _____ __     ___             
+#     ____     __                   _  __            __      _____ __     ___
 #    / __/_ __/ /________ _________(_)/_/ ___    ___/ /__   / ___//_/ ___/ (_)__ ____  ___
 #   / _/ \ \ / __/ __/ _ `/ __/ __/ / _ \/ _ \  / _  / -_) / /__/ _ \/ _  / / _ `/ _ \(_-<
 #  /___//_\_\\__/_/  \_,_/\__/\__/_/\___/_//_/  \_,_/\__/  \___/\___/\_,_/_/\_, /\___/___/
-#                                                                          /___/          
+#                                                                          /___/
 
 # Si no tenemos un file con los códigos de cursos ...
 if not os.path.isfile("Undergraduate_Academic_Discipline_Codes.json"):
@@ -47,11 +47,11 @@ if DEBUG:
 
 
 
-#     ____     __                   _  __            __      _____                    
+#     ____     __                   _  __            __      _____
 #    / __/_ __/ /________ _________(_)/_/ ___    ___/ /__   / ___/_ _________ ___  ___
 #   / _/ \ \ / __/ __/ _ `/ __/ __/ / _ \/ _ \  / _  / -_) / /__/ // / __(_-</ _ \(_-<
 #  /___//_\_\\__/_/  \_,_/\__/\__/_/\___/_//_/  \_,_/\__/  \___/\_,_/_/ /___/\___/___/
-#                                                                                     
+#
 
 registrars_link = 'https://www.uprm.edu/registrar/sections/index.php?v1={}&v2=&term={}&a=s&cmd1=Search'
 term = '5-2020'
@@ -156,7 +156,7 @@ for i, code in enumerate(codigos_cursos):
                     }
 
             cursos[f'{curso}-{seccion}'] = info_curso
-            
+
         except IndexError:
             # El table row no sigue el formato que nos interesa, por lo que lo vamos a ignorar
             continue
