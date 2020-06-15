@@ -524,17 +524,13 @@ var menu_5 = {
  *                                                                                      /_/
  */
 
-if (window.innerWidth <= window.innerHeight) {
-    input.addEventListener("keydown", function (event) {
-        current_menu.handle_input(event.key);
-        input.value = "";
-    });
-}
+input.addEventListener("keydown", function (event) {
+    e = event || window.event;
+    alert("Key pressed! " + e.key);
+    current_menu.handle_input(e.key);
+    input.value = "";
+});
 
-// document.addEventListener("keydown", function (event) {
-//     current_menu.handle_input(event.key);
-//     input.value = "";
-// });
 
 
 var current_menu = main_menu;
