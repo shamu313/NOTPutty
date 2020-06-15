@@ -1,4 +1,6 @@
 // Thanks to http://patorjk.com/software/taag/ for the ASCII art
+// Thank you https://es6console.com/ for transforming the JS
+// Thank you https://jscompress.com/ for compressing the JS
 
 
 /***
@@ -523,8 +525,8 @@ var menu_5 = {
  */
 
 if (window.innerWidth <= window.innerHeight) {
-    input.addEventListener("input", function (event) {
-        current_menu.handle_input(input.value);
+    input.addEventListener("keydown", function (event) {
+        current_menu.handle_input(event.key);
         input.value = "";
     });
 }
