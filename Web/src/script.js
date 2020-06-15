@@ -508,6 +508,8 @@ var menu_5 = {
                 current_menu = main_menu;
                 current_menu.refresh();
                 break;
+            case "5":
+                current_menu=
             default:
                 display(this, absolute_height - 4);
         }
@@ -537,6 +539,16 @@ var current_menu = main_menu;
 current_menu.refresh();
 
 
+// ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+
+
+
+
+
+
+
+
 /*
 
 object.body = `         <span class='white-background'>****************************************************************</span>
@@ -555,3 +567,29 @@ object.body = `         <span class='white-background'>*************************
          <span class='white-background'>*</span>                                                              <span class='white-background'>*</span>
          <span class='white-background'>****************************************************************</span>`;
          */
+
+
+// UNIVERSIDAD DE PUERTO RICO
+// Recinto Universitario de Mayaguez
+// 03 / jun / 2020                                                             6: 41 pm
+// SISTEMA ESTUDIANTIL COLEGIAL
+
+
+// MENU DESPLIEGUE: (Ver otra informacion)
+
+// 1.  Evaluacion certificacion #4
+// 2.  Curriculo
+// 3.  Evaluo de facturacion de matricula
+// 4.  Matricula
+// 5.  Turno de seleccion de cursos / secciones o Examenes finales
+// 6.  Horario de cursos disponibles en Matricula
+// 7.  Titulo de cursos disponibles en Horario
+// 8.  Horario de matricula grafico
+// 9.  Evaluo de matricula e indicadores
+
+// 0.  Finalizar
+
+
+// Opcion deseada:
+
+
