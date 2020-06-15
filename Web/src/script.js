@@ -531,10 +531,10 @@ if (window.innerWidth <= window.innerHeight) {
     });
 }
 
-document.addEventListener("keydown", function (event) {
-    current_menu.handle_input(event.key);
-    input.value = "";
-});
+// document.addEventListener("keydown", function (event) {
+//     current_menu.handle_input(event.key);
+//     input.value = "";
+// });
 
 
 var current_menu = main_menu;
