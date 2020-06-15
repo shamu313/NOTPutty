@@ -245,8 +245,8 @@ var main_menu_default = {
        <span class='white-background'>!</span>   Si desea realizar esta operación vaya a <a href="https://home.uprm.edu">https://home.uprm.edu</a> y    <span class='white-background'>!</span>
        <span class='white-background'>!</span>                                                                      <span class='white-background'>!</span>
        <span class='white-background'>!</span>      Una vez ingrese a su cuenta podrá ${
-         this.messages[this.message_key]
-       }
+      this.messages[this.message_key]
+      }
        <span class='white-background'>!</span>                                                                      <span class='white-background'>!</span>
        <span class='white-background'>!</span>                                                                      <span class='white-background'>!</span>
        <span class='white-background'>!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!</span>`;
@@ -285,31 +285,31 @@ var menu_2 = {
               --------------------------------------------------
               |                                                |
               |   Número Identificación       : ${
-                this.current_operation === 0 || !this.lines[0].match(/_/g)
-                  ? this.lines[0]
-                  : "            "
-              }   |
+      this.current_operation === 0 || !this.lines[0].match(/_/g)
+        ? this.lines[0]
+        : "            "
+      }   |
               |       Ej. 802999999                            |
               |                                                |
               |   Código de Acceso Permanente : ${
-                this.current_operation === 1 || !this.lines[1].match(/_/g)
-                  ? this.lines[1]
-                  : "            "
-              }   |
+      this.current_operation === 1 || !this.lines[1].match(/_/g)
+        ? this.lines[1]
+        : "            "
+      }   |
               |       Ej. 1234                                 |
               |                                                |
               |   Seguro Social               : ${
-                this.current_operation === 2 || !this.lines[2].match(/_/g)
-                  ? this.lines[2]
-                  : "            "
-              }   |
+      this.current_operation === 2 || !this.lines[2].match(/_/g)
+        ? this.lines[2]
+        : "            "
+      }   |
               |       Ej. 1234  (Últimos 4)                    |
               |                                                |
               |   Fecha Nacimiento            : ${
-                this.current_operation === 3 || !this.lines[3].match(/_/g)
-                  ? this.lines[3]
-                  : "            "
-              }   |
+      this.current_operation === 3 || !this.lines[3].match(/_/g)
+        ? this.lines[3]
+        : "            "
+      }   |
               |       Ej. MMDDAAAA                             |
               |                                                |
               --------------------------------------------------`;
@@ -544,10 +544,15 @@ var menu_5 = {
  *                                                                                      /_/
  */
 
-input.addEventListener("keydown", function (event) {
-  e = event || window.event;
-  alert("Key pressed! " + e.key);
-  current_menu.handle_input(e.key);
+if (window.innerWidth <= window.innerHeight) {
+  input.addEventListener("keydown", function (event) {
+    current_menu.handle_input(event.key);
+    input.value = "";
+  });
+}
+
+document.addEventListener("keydown", function (event) {
+  current_menu.handle_input(event.key);
   input.value = "";
 });
 
