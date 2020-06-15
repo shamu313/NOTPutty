@@ -1,6 +1,7 @@
 // Thanks to http://patorjk.com/software/taag/ for the ASCII art
 // Thank you https://es6console.com/ for transforming the JS
 // Thank you https://jscompress.com/ for compressing the JS
+// Thank you https://www.outsystems.com/blog/javascript-events-unmasked-how-to-create-input-mask-for-mobile.html for helping me understand the input mask problems and https://stackoverflow.com/questions/11219582/how-to-detect-my-browser-version-and-operating-system-using-javascript for helping me solve the problem
 
 /***
  *      _____              __            __        ____      _   __         _      __   __
@@ -245,8 +246,8 @@ var main_menu_default = {
        <span class='white-background'>!</span>   Si desea realizar esta operación vaya a <a href="https://home.uprm.edu">https://home.uprm.edu</a> y    <span class='white-background'>!</span>
        <span class='white-background'>!</span>                                                                      <span class='white-background'>!</span>
        <span class='white-background'>!</span>      Una vez ingrese a su cuenta podrá ${
-         this.messages[this.message_key]
-       }
+      this.messages[this.message_key]
+      }
        <span class='white-background'>!</span>                                                                      <span class='white-background'>!</span>
        <span class='white-background'>!</span>                                                                      <span class='white-background'>!</span>
        <span class='white-background'>!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!</span>`;
@@ -285,31 +286,31 @@ var menu_2 = {
               --------------------------------------------------
               |                                                |
               |   Número Identificación       : ${
-                this.current_operation === 0 || !this.lines[0].match(/_/g)
-                  ? this.lines[0]
-                  : "            "
-              }   |
+      this.current_operation === 0 || !this.lines[0].match(/_/g)
+        ? this.lines[0]
+        : "            "
+      }   |
               |       Ej. 802999999                            |
               |                                                |
               |   Código de Acceso Permanente : ${
-                this.current_operation === 1 || !this.lines[1].match(/_/g)
-                  ? this.lines[1]
-                  : "            "
-              }   |
+      this.current_operation === 1 || !this.lines[1].match(/_/g)
+        ? this.lines[1]
+        : "            "
+      }   |
               |       Ej. 1234                                 |
               |                                                |
               |   Seguro Social               : ${
-                this.current_operation === 2 || !this.lines[2].match(/_/g)
-                  ? this.lines[2]
-                  : "            "
-              }   |
+      this.current_operation === 2 || !this.lines[2].match(/_/g)
+        ? this.lines[2]
+        : "            "
+      }   |
               |       Ej. 1234  (Últimos 4)                    |
               |                                                |
               |   Fecha Nacimiento            : ${
-                this.current_operation === 3 || !this.lines[3].match(/_/g)
-                  ? this.lines[3]
-                  : "            "
-              }   |
+      this.current_operation === 3 || !this.lines[3].match(/_/g)
+        ? this.lines[3]
+        : "            "
+      }   |
               |       Ej. MMDDAAAA                             |
               |                                                |
               --------------------------------------------------`;
@@ -544,17 +545,38 @@ var menu_5 = {
  *                                                                                      /_/
  */
 
-if (window.innerWidth <= window.innerHeight) {
-  input.addEventListener("keydown", function (event) {
+let ua = navigator.userAgent;
+let browser = "Unknown Browser";
+let OSName = "Unknown OS";
+
+if (ua.indexOf("Opera") != -1) browser = "Opera";
+if (ua.indexOf("Firefox") != -1 && ua.indexOf("Opera") == -1) browser = "Firefox";
+if (ua.indexOf("Chrome") != -1) browser = "Chrome";
+if (ua.indexOf("Safari") != -1 && ua.indexOf("Chrome") == -1) browser = "Safari";
+if (ua.indexOf("MSIE") != -1 && (ua.indexOf("Opera") == -1 && ua.indexOf("Trident") == -1)) browser = "Internet Explorer";
+if (ua.indexOf("Trident") != -1) browser = "Internet Explorer";
+
+if (ua.indexOf("Win") != -1) OSName = "Windows";
+if (ua.indexOf("Mac") != -1) OSName = "Macintosh";
+if (ua.indexOf("Linux") != -1) OSName = "Linux";
+if (ua.indexOf("Android") != -1) OSName = "Android";
+if (ua.indexOf("like Mac") != -1) OSName = "iOS";
+
+
+// Use text input to handle inputs if browser is other than Firefox or Safari or is using phone OS
+if ((browser !== "Firefox" && browser !== "Safari") && (OSName === "Android" || OSName === "iOS")) {
+  input.addEventListener("input", function (event) {
+    current_menu.handle_input(input.value);
+    input.value = "";
+  });
+} else {
+  document.addEventListener("keydown", function (event) {
     current_menu.handle_input(event.key);
     input.value = "";
   });
 }
 
-document.addEventListener("keydown", function (event) {
-  current_menu.handle_input(event.key);
-  input.value = "";
-});
+
 
 var current_menu = main_menu;
 current_menu.refresh();
