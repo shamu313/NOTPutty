@@ -25,10 +25,22 @@ var selected_term = "";
 var credits_selected = 0;
 var student_number = "(802)00-0000";
 var course_list = {};
-var selected_courses = [
-  cursos_1er_verano_2020["MATE4009-01A"],
-  cursos_1er_verano_2020["INGE3016-001D"],
-];
+var selected_courses = {
+  "1er Sem": [],
+  "2do Sem": [
+    cursos_2do_sem_2019["INGE3016-020"],
+    cursos_2do_sem_2019["FISI3171-061"],
+    cursos_2do_sem_2019["FISI3173-086"],
+    cursos_2do_sem_2019["QUIM3132-050"],
+    cursos_2do_sem_2019["QUIM3134-06R"],
+    cursos_2do_sem_2019["INGL3212-101"],
+    cursos_2do_sem_2019["MATE3063-081"]
+
+  ],
+  "1er Verano": [
+    cursos_1er_verano_2020["MATE4009-01A"]
+  ],
+};
 
 /***
  *       __ __    __               ____              __  _
@@ -44,6 +56,78 @@ function centralize(string, width = 80) {
 
 function pad_right(string, width) {
   return String(string) + " ".repeat(width - String(string).length);
+}
+
+function sleep(func, delay) {
+
+  setTimeout(() => { func(); }, delay);
+}
+
+function add_course(object) {
+
+  function parse_itinerary(string) {
+    let start_time = "";
+    let end_time = "";
+    let days = "";
+    string = string.toLowerCase().trim();
+
+    let match = string.match(/(\d\d?:\d\d (?:am|pm))/g);
+    start_time = match[0];
+    end_time = match[1];
+
+    match = string.match(/([lmwjvsd]{1,5}$)/g);
+    days = match[0];
+
+    start_time = new Date(`January 1, 2000 ${start_time}`);
+    end_time = new Date(`January 1, 2000 ${end_time}`);
+
+
+    return [start_time, end_time, days];
+  }
+
+  let conflicts = false;
+
+  // Iterate through list of itineraries. End loop early if it conflicts
+  for (let i = 0; i < object["horario"].length && !conflicts; i++) {
+    let itinerary = object["horario"][i];
+    let [start_time, end_time, days] = parse_itinerary(itinerary);
+
+    // Iterate through list of selected courses. End early if it conflicts
+    for (let j = 0; j < selected_courses[selected_term].length && !conflicts; j++) {
+      // Iterate through list of itineraries for selected course
+      for (let k = 0; k < selected_courses[selected_term][j]["horario"].length && !conflicts; k++) {
+
+        let [selected_course_start, selected_course_end, selected_course_days] = parse_itinerary(selected_courses[selected_term][j]["horario"][k]);
+
+        // Check if itinerary is for same day. End loop early if same day
+        let same_day = false;
+        for (let c = 0; c < days.length && !same_day; c++) {
+          if (selected_course_days.includes(days[c])) {
+            same_day = true;
+          }
+        }
+
+        if (((end_time > selected_course_start && start_time < selected_course_end) || (start_time < selected_course_end && end_time > selected_course_start)) && same_day) {
+          // console.log("[!] Conflicts with: ");
+          // console.log(selected_courses[selected_term][j]);
+          // console.log("[>>] Original course: ");
+          // console.log(object);
+
+          conflicts = true;
+        }
+      }
+    }
+
+
+  }
+
+  // Check conditions to add course
+  if (!conflicts) {
+    selected_courses[selected_term].push(object);
+    return true;
+  } else {
+    return false;
+  }
 }
 
 function header(title, long = true) {
@@ -330,10 +414,11 @@ ${this.user_name}
       }   |
               |       Ej. MMDDAAAA                             |
               |                                                |
-              --------------------------------------------------`;
+              --------------------------------------------------
+${centralize("<<  NO oprimir tecla <Enter> al entrar los datos  >>", 85)}`;
   },
 
-  footer: `${" ".repeat(69)}[6=Pantalla\n${" ".repeat(70)}9=Fin    ]`,
+  footer: `${" ".repeat(35)}<span class='white-background'> [PF1=(6)Refrescar Pantalla    PF4=(9)Fin] </span>`,
 
   refresh: function () {
     this.handle_input(null);
@@ -420,7 +505,7 @@ ${this.user_name}
 
       // if not, we can update the screen
     } else {
-      display(this, absolute_height - 4);
+      display(this, absolute_height - 1);
     }
   },
 };
@@ -428,11 +513,10 @@ ${this.user_name}
 
 var term_selection = {
   header: function () {
-    return header("S E L E C C I Ó N  D E  S E C C I O N E S", true);
+    return header("M A T R I C U L A", true);
   },
 
   body: "",
-  course_list: "",
 
   footer: `Indique Semestre  1=1er Sem,   2=2do Sem,   3=1er Verano o Verano Extendido
                   S=salir`,
@@ -474,13 +558,28 @@ var term_selection = {
 };
 
 var alta_bajas_cambio = {
-  user_name: "",
-  body_list: "",
-  right_panel: [],
   mode: 0,
   buffer: "",
+  user_name: "",
+  body_list: "",
+  footer_text: "",
   choosing_section: false,
+  right_panel: [],
   potential_courses: [],
+
+  reset_screen: function (partial = false) {
+    this.buffer = "";
+    this.body_list = "";
+    this.user_name = "";
+    this.choosing_section = false;
+    this.right_panel = [];
+    this.footer_text = "";
+    if (!partial) {
+      this.mode = 0;
+      this.potential_courses = [];
+      this.footer = this.default_footer;
+    }
+  },
 
   header: function () {
     return header(`SELECCIÓN DE SECCIONES ${selected_term} ESTUDIANTE`, false);
@@ -497,12 +596,14 @@ ${this.body_list}`;
            M=MatEvalúo  F=HorEstGráfico  O=CódigoReservar S=Salir`,
 
   action_footer: function () {
-    return `Abreviatura y número de curso  o  FIN                                  [${this.mode === 1 ? "Altas" : this.mode === 2 ? "Bajas" : "Cambio"}]
+    return `${centralize(this.footer_text, 80)}
+Abreviatura y número de curso  o  FIN                                  [${this.mode === 1 ? "Altas" : this.mode === 2 ? "Bajas" : "Cambio"}]
 <span class="underline">${pad_right(this.buffer, 10)}</span>`;
   },
 
   section_footer: function () {
-    return `Sección seleccionada, (PF3=(8)Secciones Disponibles  CAN=Regresar)
+    return `${centralize(this.footer_text, 80)}
+Sección seleccionada, (PF3=(8)Secciones Disponibles  CAN=Regresar)
 <span class="underline">${pad_right(this.buffer, 10)}</span>`;
 
   },
@@ -516,8 +617,8 @@ ${this.body_list}`;
     // Print list of selected courses
     for (let i = 1; i <= 12; i++) {
       this.body_list += centralize(i.toString(), 3) + ".  ";
-      if (selected_courses.length > i - 1) {
-        let course = selected_courses[i - 1];
+      if (selected_courses[selected_term].length > i - 1) {
+        let course = selected_courses[selected_term][i - 1];
         this.body_list += `${pad_right(course["codificacion"], 10)}   ${pad_right(course["seccion"], 8)} ${pad_right(course["creditos"], 4)} ${course["grado"] === "Sub-graduados" ? "S" : "G"}   █`;
       }
 
@@ -537,17 +638,16 @@ ${this.body_list}`;
 
   handle_input: function (key) {
 
-    // if (key === null) {
-    //   display(this, absolute_height - 4);
-    // }
-
     switch (this.mode) {
       case 0:
         switch (key) {
           case "S":
           case "s":
+            this.reset_screen();
             current_menu = term_selection;
             current_menu.refresh();
+            // Force return. Otherwise the display at the bottom will force the screen to remain in this menu
+            return;
             break;
           case "A":
           case "a":
@@ -592,11 +692,7 @@ ${this.body_list}`;
 
         else if (typeof key === "string" && (key === "Enter" || key === "\n")) {
           if (this.buffer.trim().toLowerCase() === "fin") {
-            this.mode = 0;
-            this.buffer = "";
-            this.right_panel = [];
-            this.potential_courses = [];
-            this.choosing_section = false;
+            this.reset_screen();
           }
           // If the buffer looks like a course code and is doing "altas" and not choosing sections
           else if (this.buffer.match(/[A-Za-z]{4}\d{4}/g) && this.mode === 1 && !this.choosing_section) {
@@ -622,8 +718,8 @@ ${this.body_list}`;
               }
 
               this.choosing_section = true;
-              this.footer = this.section_footer;
               this.buffer = "";
+              this.footer = this.section_footer;
 
               // If there are no potential courses, warn the user
             } else {
@@ -638,54 +734,52 @@ ${this.body_list}`;
 
             // If user wants to cancel ...
             if (this.buffer.toLowerCase() === "can") {
-              // Reset everything
-              this.choosing_section = false;
-              this.mode = 0;
-              this.buffer = "";
-              this.footer = this.default_footer;
-              this.right_panel = [];
+              this.reset_screen();
 
             } else {
 
+              // Try to add course
               for (let i = 0; i < this.potential_courses.length; i++) {
-                if (course_list[this.potential_courses[i]]["seccion"] === this.buffer) {
-                  selected_courses.push(course_list[this.potential_courses[i]]);
-                  this.choosing_section = false;
-                  this.mode = 0;
-                  this.buffer = "";
-                  this.footer = this.default_footer;
-                  this.right_panel = []
+                if (course_list[this.potential_courses[i]]["seccion"] === this.buffer.toUpperCase().trim()) {
+                  if (add_course(course_list[this.potential_courses[i]])) {
+
+                    this.reset_screen(true);
+                  } else {
+                    this.footer_text = "Horario de este curso conflige con otro";
+                    this.buffer = "";
+                  };
+
                   break;
                 }
-              }
-
-              // If no action was taken ...
-              if (this.choosing_section) {
-                this.buffer = "";
-                this.right_panel.push("Seleccione sección nuevamente");
               }
 
             }
           }
           // If buffer is a plausible number to delete by index and is doing "bajas"
-          else if ((this.buffer.match(/\d{1,2}/g) && 1 <= parseInt(this.buffer) && parseInt(this.buffer) <= selected_courses.length) && this.mode === 2) {
-            selected_courses.splice(parseInt(this.buffer) - 1, 1);
-            this.mode = 0;
-            this.buffer = "";
-            this.footer = this.default_footer;
-            this.right_panel = []
+          else if (this.buffer.match(/^\d{1,2}$/g) && this.mode === 2) {
+            if (1 <= parseInt(this.buffer) && parseInt(this.buffer) <= selected_courses[selected_term].length) {
+              selected_courses[selected_term].splice(parseInt(this.buffer) - 1, 1);
+              this.reset_screen(true);
+            }
+            else {
+              this.footer_text = "Curso solicitado está en BLANCO";
+              this.buffer = "";
+            }
           }
           // If buffer looks like a course code and is doing "bajas"
           else if (this.buffer.match(/[A-Za-z]{4}\d{4}/g) && this.mode === 2) {
-            for (let i = 0; i < selected_courses.length; i++) {
-              if (selected_courses[i]["codificacion"].startsWith(this.buffer.trim().toUpperCase())) {
-                selected_courses.splice(i, 1);
-                this.mode = 0;
-                this.buffer = "";
-                this.footer = this.default_footer;
-                this.right_panel = []
-                break;
+            let found_course = false;
+            for (let i = 0; i < selected_courses[selected_term].length && !found_course; i++) {
+              if (selected_courses[selected_term][i]["codificacion"] === this.buffer.trim().toUpperCase()) {
+                selected_courses[selected_term].splice(i, 1);
+                this.reset_screen(true)
+                found_course = true;
               }
+            }
+
+            if (!found_course) {
+              this.footer_text = "Curso NO existe en matrícula";
+              this.buffer = "";
             }
           }
 
@@ -696,7 +790,7 @@ ${this.body_list}`;
         break;
 
     }
-    display(this, absolute_height - 4);
+    display(this, absolute_height - 5);
   },
 };
 
@@ -746,11 +840,11 @@ MENU DESPLIEGUE: (Ver otra informacion)
 };
 
 /***
- *       __ __             __                 __  ____          __       ___  ____        _      __
- *      / // /__ ___ _____/ /_  ___ ____  ___/ / / __/__  __ __/ / ___  / _/ / __/_______(_)__  / /_
- *     / _  / -_) _ `/ __ / __ / / _ `/ _ \/ _  / _\ \/ _ \/ / / / / / _ \/ _/ _\ \/ __/ __ / / _ \/ __/,
- *    /_/ / / _ /\__ /\_, _ / _ /  \__ /  \_, _ / _//_/\_,_/ /___/\___/\_,_/_/  \___/_/  /___/\__/_/ /_/ .__/\__/
- *       /_/
+ *       __ __             __    ____      ____          __       ___  ____        _      __
+ *      / // /__ ___ _____/ /_  / __/___  / __/__  __ __/ / ___  / _/ / __/_______(_)__  / /_
+ *     / _  / -_) _ `/ __/ __/  > _/_ _/ _\ \/ _ \/ // / / / _ \/ _/ _\ \/ __/ __/ / _ \/ __/
+ *    /_//_/\__/\_,_/_/  \__/  |_____/  /___/\___/\_,_/_/  \___/_/  /___/\__/_/ /_/ .__/\__/
+ *                                                                               /_/
  */
 
 let ua = navigator.userAgent;
@@ -786,7 +880,7 @@ if ((browser !== "Firefox" && browser !== "Safari") && (OSName === "Android" || 
 
 
 
-var current_menu = main_menu;
+var current_menu = term_selection;
 current_menu.refresh();
 
 // ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////
