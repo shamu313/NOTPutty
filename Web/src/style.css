@@ -23,6 +23,10 @@ a{
   color: #111111;
 }
 
+.underline{
+  text-decoration: underline;
+}
+
 input,
 input:focus {
   position: absolute;
