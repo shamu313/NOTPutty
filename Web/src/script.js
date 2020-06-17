@@ -719,7 +719,7 @@ Sección seleccionada, (PF3=(8)Secciones Disponibles  CAN=Regresar)
           this.refresh();
 
 
-        } else if (typeof key === "string" && (key === "Enter" || key === "\n")) {
+        } else if (typeof key === "string" && key === "Enter") {
           if (this.buffer.trim().toLowerCase() === "fin") {
             this.reset_screen();
 
@@ -1010,17 +1010,33 @@ if (ua.indexOf("like Mac") !== -1) { OSName = "iOS"; }
 
 
 // Use text input to handle inputs if browser is other than Firefox or Safari or is using phone OS
-if ((browser !== "Firefox" && browser !== "Safari") && (OSName === "Android" || OSName === "iOS")) {
-  input.addEventListener("input", function (event) {
-    current_menu.handle_input(input.value);
-    input.value = "";
-  });
-} else {
-  document.addEventListener("keydown", function (event) {
-    current_menu.handle_input(event.key);
-    input.value = "";
-  });
-}
+// if ((browser !== "Firefox" && browser !== "Safari") && (OSName === "Android" || OSName === "iOS")) {
+input.addEventListener("beforeinput", function (event) {
+  alert(event.data);
+  alert(event.inputType);
+
+  switch (event.inputType) {
+    case "insertText":
+      current_menu.handle_input(event.data);
+      break;
+    case "deleteContentForward":
+    case "deleteContentBackward":
+      current_menu.handle_input("Backspace");
+      break;
+    case "insertLineBreak":
+      current_menu.handle_input("Enter");
+
+      break;
+  }
+
+  input.value = "";
+});
+// } else {
+//   document.addEventListener("keydown", function (event) {
+//     current_menu.handle_input(event.key);
+//     input.value = "";
+//   });
+// }
 
 
 
