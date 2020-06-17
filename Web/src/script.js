@@ -23,6 +23,7 @@ const enrollment_dates = {
 const default_user_name = "Juan del Pueblo Rodríguez";
 
 var selected_term = "";
+// var selected_term = "2do Sem";
 var credits_selected = 0;
 var student_number = "(802)00-0000";
 var course_list = {};
@@ -55,9 +56,11 @@ function centralize(string, width = absolute_width, character = " ") {
   string = string.toString().trim();
   width = parseInt(width);
 
-  return character.repeat((width - string.length) / 2) + string;
-}
+  let output = character.repeat((width - string.length) / 2) + string;
+  output += character.repeat(width - output.length);
 
+  return output;
+}
 
 function pad_right(string, width = absolute_width, character = " ") {
   string = string.toString().trim();
@@ -142,13 +145,12 @@ function add_course(object) {
   }
 }
 
-function header(title, long = true) {
-  const today = new Date(Date.now());
-  const year = today.getFullYear();
-  let month = today.getMonth();
-  let day = today.getDate();
-  let hours = today.getHours();
-  let minutes = today.getMinutes();
+function format_date(date_object) {
+  const year = date_object.getFullYear();
+  let month = date_object.getMonth();
+  let day = date_object.getDate();
+  let hours = date_object.getHours();
+  let minutes = date_object.getMinutes();
   let am_pm = "am";
 
   // Preprocessing ...
@@ -196,18 +198,28 @@ function header(title, long = true) {
     hours -= 12;
   } else if (hours === 0) {
     hours = 12;
+  } else if (hours === 12) {
+    am_pm = "pm";
   }
 
   day = pad_left(day, 2, "0");
   hours = pad_left(hours, 2, " ");
   minutes = pad_left(minutes, 2, "0");
 
-  // Prepend spaces to title in order to centralize it
-  title = centralize(title, absolute_width)
-
   // Compose time and date
   const time = `${hours}:${minutes} ${am_pm}`;
   const date = `${day}/${month}/${year}`;
+
+  return [time, date];
+}
+
+function header(title, long = true) {
+  const today = new Date(Date.now());
+
+  const [time, date] = format_date(today);
+
+  title = centralize(title, absolute_width)
+
 
   // Actually compose and return header;
   if (long) {
@@ -397,8 +409,7 @@ var menu_2 = {
   },
 
   body: function () {
-    return `
-${this.user_name}
+    return `${this.user_name}
               --------------------------------------------------
               |                                                |
               |   Número Identificación       : ${
@@ -507,7 +518,12 @@ ${centralize("<<  NO oprimir tecla <Enter> al entrar los datos  >>", 85)}`;
       }
     } else if (key === "Enter" && this.buffer === "9") {
       current_menu = main_menu;
-      current_menu.handle_input(0);
+      current_menu.refresh();
+      changed_menu = true;
+    } else if (key === "Enter" && this.buffer === "6") {
+      this.buffer = "";
+      current_menu = menu_2;
+      current_menu.refresh()
       changed_menu = true;
     }
 
@@ -635,7 +651,7 @@ Sección seleccionada, (PF3=(8)Secciones Disponibles  CAN=Regresar)
 
     // Print list of selected courses
     for (let i = 1; i <= 12; i++) {
-      this.body_list += centralize(i.toString(), 3) + ".  ";
+      this.body_list += pad_left(i.toString(), 2) + ".  ";
       if (selected_courses[selected_term].length > i - 1) {
         const course = selected_courses[selected_term][i - 1];
         this.body_list += `${pad_right(course["codificacion"], 10)}   ${pad_right(course["seccion"], 8)} ${pad_right(course["creditos"], 4)} ${course["grado"] === "Sub-graduados" ? "S" : "G"}   █`;
@@ -659,6 +675,7 @@ Sección seleccionada, (PF3=(8)Secciones Disponibles  CAN=Regresar)
 
     // Filter potential courses
     this.potential_courses = Object.keys(course_list).filter((name) => name.startsWith(course_name));
+
 
   },
 
@@ -768,6 +785,14 @@ Sección seleccionada, (PF3=(8)Secciones Disponibles  CAN=Regresar)
           case "s":
             this.reset_screen();
             current_menu = term_selection;
+            current_menu.refresh();
+            // Force return. Otherwise the display at the bottom will force the screen to remain in this menu
+
+            return;
+          case "F":
+          case "f":
+            this.reset_screen();
+            current_menu = graphical_itinerary;
             current_menu.refresh();
             // Force return. Otherwise the display at the bottom will force the screen to remain in this menu
 
@@ -965,6 +990,160 @@ Sección seleccionada, (PF3=(8)Secciones Disponibles  CAN=Regresar)
 };
 
 
+var graphical_itinerary = {
+  sorted_courses: function (courses) {
+    // Split multiple course itineraries into multiple different courses
+    const l0 = courses.length;
+    // Iterate through courses
+    for (let i = 0; i < l0; i++) {
+      // If there are more than 1 itineraries for course ...
+      if (courses[i]["horario"].length > 1) {
+        for (let j = 1; j < courses[i]["horario"].length; j++) {
+          // Clone course
+          let new_course = courses[i].slice();
+          // Only use 1 itinerary
+          new_course["horario"] = [courses[i]["horario"][j]];
+          // Set credits to 0 to not mess with total credits
+          new_course["creditos"] = 0;
+
+          // Clone too just in case
+          courses.push(new_course.slice());
+        }
+      }
+    }
+
+    courses.sort(function (obj1, obj2) {
+
+      const [start1, end1, days1] = parse_itinerary(obj1["horario"][0]);
+      const [start2, end2, days2] = parse_itinerary(obj2["horario"][0]);
+
+      return start1.valueOf() - start2.valueOf()
+    });
+
+    return courses;
+  },
+
+
+  header: function () {
+    let [time, date] = format_date(new Date(Date.now()));
+
+
+    // Substitute slashes with unique dummy characters
+    date = date.replace("/", "**");
+    date = date.replace("/", "**");
+    // Substitute unique dummy characters with spaced slashes
+    date = date.replace("**", " / ");
+    date = date.replace("**", " / ");
+
+    // Add space after
+    time = time.replace(":", ": ");
+
+    title = " ".repeat(32) + student_number + "     " + pad_right(default_user_name.toUpperCase(), 35) + "0000 0 (Concentración)"
+
+
+
+    return `     ${date}                    U.P.R. - R.U.M. - Horario Matrícula - ${selected_term} - 2021                     ${time}\n
+${title}`;
+  },
+
+  body: function () {
+
+    // Prepare borders and header
+    let table = "-".repeat(134) + "\n";
+
+    const headers = [
+      centralize("Periodos", 18),
+      centralize("Lunes", 18),
+      centralize("Martes", 18),
+      centralize("Miércoles", 18),
+      centralize("Jueves", 18),
+      centralize("Viernes", 18),
+      centralize("Sábado", 18)
+    ];
+    headers.forEach(function (element, i) {
+      table += "|" + element;
+    });
+
+    table += "|\n";
+
+    table += ("|" + "-".repeat(18)).repeat(headers.length) + "|\n";
+
+    // Begin preparing body of table
+    const empty_row = ("|" + " ".repeat(18)).repeat(headers.length) + "|\n";
+
+
+    const amount_courses = selected_courses[selected_term].length.toString();
+    let courses = this.sorted_courses(selected_courses[selected_term].slice());
+    let amount_credits = 0;
+
+    // Iterate through courses
+    const l0 = courses.length;
+    courses.forEach(function (course, i) {
+
+      amount_credits += course["creditos"];
+
+      const cell = centralize(course["codificacion"] + "  - " + course["seccion"], 18);
+      const empty_cell = " ".repeat(18)
+
+      // Iterate through the course's itineraries. Most generally there will only be 1 per course
+      course["horario"].forEach(function (current_itinerary, j) {
+        const [start, end, days] = parse_itinerary(current_itinerary);
+        let [start_time, start_date] = format_date(start);
+        const [end_time, end_date] = format_date(end);
+
+        start_time = start_time.replace(/ (?:am|pm)/, "");
+        const periods = centralize(`${start_time}- ${end_time}`, 18);
+
+        table += `|${centralize(periods, 18)}`;
+
+        if (days.includes("l")) { table += `|${cell}`; }
+        else { table += `|${empty_cell}`; }
+
+        if (days.includes("m")) { table += `|${cell}`; }
+        else { table += `|${empty_cell}`; }
+
+        if (days.includes("w")) { table += `|${cell}`; }
+        else { table += `|${empty_cell}`; }
+
+        if (days.includes("j")) { table += `|${cell}`; }
+        else { table += `|${empty_cell}`; }
+
+        if (days.includes("v")) { table += `|${cell}`; }
+        else { table += `|${empty_cell}`; }
+
+        if (days.includes("s")) { table += `|${cell}`; }
+        else { table += `|${empty_cell}`; }
+
+        table += "|\n";
+      });
+
+      if (i < l0 - 1) { table += empty_row; }
+    });
+
+    table += "|" + "-".repeat(132) + "|\n";
+
+    table += `|${centralize("Cursos   " + amount_courses + "  -  Créditos  " + amount_credits.toString(), 132)}|\n`;
+
+    table += "-".repeat(134);
+
+
+    return table;
+
+  },
+
+  footer: "",
+
+  refresh: function () {
+    display(this, absolute_height);
+  },
+
+  handle_input: function (key) {
+    current_menu = alta_bajas_cambio;
+    current_menu.refresh();
+  }
+}
+
+
 /***
  *             __  ___                ____
  *            /  |/  /__ ___  __ __  / __/
@@ -1064,7 +1243,7 @@ if ((browser !== "Firefox" && browser !== "Safari") && (OSName === "Android" || 
 
 
 
-var current_menu = term_selection;
+var current_menu = main_menu;
 current_menu.refresh();
 
 // ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////

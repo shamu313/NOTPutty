@@ -5,13 +5,14 @@
 
 body {
   font-family: "Consolas";
-  font-size: 1.5vw;
+  font-size: 1.30vw;
   margin: 1vw;
 
   background-color: #111111;
   color: #eeeeee;
 
   padding: 0;
+  /* line-height: 17.5px; */
 }
 
 a{
