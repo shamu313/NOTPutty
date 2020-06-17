@@ -13,7 +13,6 @@
  */
 const absolute_height = 24;
 const absolute_width = 80;
-// const body = document.getElementsByTagName("body")[0];
 const container = document.getElementById("container");
 const textarea = document.getElementsByTagName("textarea")[0];
 const enrollment_dates = {
@@ -563,6 +562,7 @@ var term_selection = {
         break;
       case "3":
         // Merge verano 1 and verano extendido courses
+        course_list = {};
         Object.assign(course_list, cursos_1er_verano_2020, cursos_verano_extendido_2020);
         selected_term = "1er Verano";
         current_menu = alta_bajas_cambio;
@@ -606,7 +606,7 @@ var alta_bajas_cambio = {
 
   body: function () {
     return ` ${student_number}  ${this.user_name + " ".repeat(25 - this.user_name.length)}       0000-0  00 ${enrollment_dates[selected_term]} Crs. TTY
-                                                           2:00 pm    ${credits_selected}   04
+                                                           2:00 pm    ${pad_left(credits_selected, 2, "0")}   04
      C U R S O   Sección  Cr. Grado
 ${this.body_list}`;
   },
@@ -651,8 +651,112 @@ Sección seleccionada, (PF3=(8)Secciones Disponibles  CAN=Regresar)
     }
 
 
-
     this.handle_input(null);
+  },
+
+  update_potential_courses: function (course_name) {
+    course_name = course_name.toString().trim().toUpperCase();
+
+    // Filter potential courses
+    this.potential_courses = Object.keys(course_list).filter((name) => name.startsWith(course_name));
+
+  },
+
+  update_right_panel: function (how) {
+    how = how.toString().trim().toLowerCase();
+    if (how === "sections") {
+      // Prepare right panel if there are multiple potential courses
+      if (this.potential_courses.length > 0) {
+        this.right_panel = [
+          "SECCIONES DISPONIBLE CURSO: " + course_list[this.potential_courses[0]]["codificacion"],
+          ""
+        ];
+
+        // Add course sections to right panel
+        for (let i = 0; i < this.potential_courses.length; i++) {
+          const last_index = this.right_panel.length - 1;
+          if (this.right_panel[last_index].length < 40) {
+            this.right_panel[last_index] += course_list[this.potential_courses[i]]["seccion"] + "  ";
+          } else {
+            this.right_panel.push(`${course_list[this.potential_courses[i]]["seccion"]}  `);
+          }
+        }
+      }
+    }
+  },
+
+  select_section: function (section, index = null) {
+    section = section.toString().trim().toUpperCase();
+
+    // If user wants to cancel ...
+    if (section === "CAN") {
+      this.reset_screen();
+
+    } else {
+
+      // Try to add course
+      const l0 = this.potential_courses.length;
+      for (let i = 0; i < l0; i++) {
+        const current_name = this.potential_courses[i]
+
+        if (course_list[current_name]["seccion"] === section) {
+          // Remove previous course before to prevent itinerary conflicts
+          let old_course = "";
+          if (index !== null) {
+            old_course = selected_courses[selected_term][index];
+            this.remove_course(index);
+            credits_selected -= course_list[current_name]["creditos"];
+
+
+          }
+
+          // If course was successfully added
+          if (add_course(course_list[current_name])) {
+            credits_selected += course_list[current_name]["creditos"];
+
+            // There is no more need for these variables
+            this.course_code = "";
+            this.selected_course_index = -1;
+            this.potential_courses = [];
+            this.choosing_section = false;
+
+            this.reset_screen(true);
+          }
+          else {
+            if (index !== null) {
+              // Add previous course again
+              add_course(old_course);
+              credits_selected += course_list[current_name]["creditos"];
+            }
+            this.footer_text = "Horario de este curso conflige con otro";
+            this.buffer = "";
+            this.choosing_section = true;
+          }
+
+          return;
+        }
+      }
+
+      this.footer_text = "Sección Inválida. Pruebe otra";
+      this.buffer = "";
+    }
+
+  },
+
+  remove_course: function (i) {
+    selected_courses[selected_term].splice(i, 1);
+  },
+
+  search_selected_courses: function (code) {
+    code = code.trim().toUpperCase();
+
+    const l0 = selected_courses[selected_term].length;
+    for (let i = 0; i < l0; i++) {
+      if (selected_courses[selected_term][i]["codificacion"] === code) {
+        return i
+      }
+    }
+    return false;
   },
 
   handle_input: function (key) {
@@ -718,101 +822,70 @@ Sección seleccionada, (PF3=(8)Secciones Disponibles  CAN=Regresar)
 
           this.refresh();
 
-
         } else if (typeof key === "string" && key === "Enter") {
           if (this.buffer.trim().toLowerCase() === "fin") {
             this.reset_screen();
 
+          }
 
-            // If the buffer looks like a course code and is doing "altas" and not choosing sections
-          } else if (this.buffer.match(/[A-Za-z]{4}\d{4}/g) && this.mode === 1 && !this.choosing_section) {
+          // ENROLLING
+          else if (this.mode === 1) {
+            // If the buffer looks like a course code and not choosing sections
+            if (this.buffer.match(/[A-Za-z]{4}\d{4}/g) && !this.choosing_section) {
 
-            // Filter potential courses
-            this.potential_courses = Object.keys(course_list).filter((k) => k.startsWith(this.buffer.trim().toUpperCase()));
+              this.update_potential_courses(this.buffer);
 
-            // Prepare right panel if there are multiple potential courses
-            if (this.potential_courses.length > 0) {
-              this.right_panel = [
-                "SECCIONES DISPONIBLE CURSO: " + course_list[this.potential_courses[0]]["codificacion"],
-                ""
-              ];
-
-              // Add course sections to right panel
-              for (let i = 0; i < this.potential_courses.length; i++) {
-                const last_index = this.right_panel.length - 1;
-                if (this.right_panel[last_index].length < 40) {
-                  this.right_panel[last_index] += course_list[this.potential_courses[i]]["seccion"] + "  ";
-                } else {
-                  this.right_panel.push(`${course_list[this.potential_courses[i]]["seccion"]}  `);
-                }
+              if (this.potential_courses.length > 0) {
+                this.footer_text = "";
+                this.choosing_section = true;
+                this.buffer = "";
+              } else {
+                this.footer_text = "Curso no GRADO";
+                this.choosing_section = false;
+                this.buffer = "";
               }
 
-              this.choosing_section = true;
-              this.buffer = "";
-              this.footer = this.section_footer;
+              this.update_right_panel("sections");
 
-              // If there are no potential courses, warn the user
-            } else {
-              this.right_panel = [
-                "CURSO NO ENCONTRADO"
-              ];
-              this.buffer = "";
+              // If is choosing sections and there are potential courses
+            } else if (this.choosing_section && this.buffer.length > 0 && this.mode === 1) {
+
+              this.select_section(this.buffer);
+
             }
           }
-          // If is choosing sections and there are potential courses
-          else if (this.choosing_section && this.potential_courses.length > 0 && this.buffer.length > 0 && this.mode !== 3) {
 
-            // If user wants to cancel ...
-            if (this.buffer.toLowerCase() === "can") {
-              this.reset_screen();
 
-            } else {
+          // UNENROLLING
+          else if (this.mode == 2) {
 
-              // Try to add course
-              for (let i = 0; i < this.potential_courses.length; i++) {
-                if (course_list[this.potential_courses[i]]["seccion"] === this.buffer.toUpperCase().trim()) {
-                  if (add_course(course_list[this.potential_courses[i]])) {
-                    credits_selected += course_list[this.potential_courses[i]]["creditos"];
-                    this.reset_screen(true);
-                  } else {
-                    this.footer_text = "Horario de este curso conflige con otro";
-                    this.buffer = "";
-                  }
+            // If buffer is a plausible number to delete by index
+            if (this.buffer.match(/^\d{1,2}$/g)) {
 
-                  break;
-                }
+              // If number is in valid range
+              if (1 <= parseInt(this.buffer) && parseInt(this.buffer) <= selected_courses[selected_term].length) {
+
+                this.remove_course(parseInt(this.buffer) - 1);
+                this.footer_text = "";
+                this.reset_screen(true);
+              } else {
+                this.footer_text = "Curso solicitado está en BLANCO";
+                this.buffer = "";
               }
             }
 
-          }
-          // If buffer is a plausible number to delete by index and is doing "bajas"
-          else if (this.buffer.match(/^\d{1,2}$/g) && this.mode === 2) {
-            if (1 <= parseInt(this.buffer) && parseInt(this.buffer) <= selected_courses[selected_term].length) {
-              selected_courses[selected_term].splice(parseInt(this.buffer) - 1, 1);
-              this.reset_screen(true);
-            }
-            else {
-              this.footer_text = "Curso solicitado está en BLANCO";
-              this.buffer = "";
-            }
-          }
-          // If buffer looks like a course code and is doing "bajas"
-          else if (this.buffer.match(/[A-Za-z]{4}\d{4}/g) && this.mode === 2) {
-            let found_course = false;
-            for (let i = 0; i < selected_courses[selected_term].length && !found_course; i++) {
-              if (selected_courses[selected_term][i]["codificacion"] === this.buffer.trim().toUpperCase()) {
-                selected_courses[selected_term].splice(i, 1);
+            // If buffer looks like a course code and is doing "bajas"
+            else if (this.buffer.match(/[A-Za-z]{4}\d{4}/g)) {
+              const result = this.search_selected_courses(this.buffer);
+              if (result === false) {
+                this.buffer = "";
+                this.footer_text = "Curso NO existe en matrícula";
+              } else {
+                this.remove_course(result);
                 this.reset_screen(true)
-                found_course = true;
               }
             }
-
-            if (!found_course) {
-              this.footer_text = "Curso NO existe en matrícula";
-              this.buffer = "";
-            }
           }
-
 
 
           // CAMBIO
@@ -822,104 +895,59 @@ Sección seleccionada, (PF3=(8)Secciones Disponibles  CAN=Regresar)
               this.selected_course_index = -1;
             }
 
+
             // Extract course code and index for the course to be changed
             if (this.buffer.match(/[A-Za-z]{4}\d{4}/g) && this.course_code === "") {
-              for (let i = 0; i < selected_courses[selected_term].length && this.course_code === ""; i++) {
-                if (selected_courses[selected_term][i]["codificacion"] === this.buffer.trim().toUpperCase()) {
-                  this.course_code = this.buffer.trim().toUpperCase();
-                  this.selected_course_index = i;
-                  this.buffer = "";
-                }
-              }
+              const result = this.search_selected_courses(this.buffer);
 
-              if (this.course_code === "") {
+              if (result === false) {
                 this.footer_text = "Curso NO existe en matrícula";
                 this.buffer = "";
                 this.course_code = "";
                 this.selected_course_index = -1;
+                this.choosing_section = false;
+
+              } else {
+                this.course_code = this.buffer.trim().toUpperCase();
+                this.selected_course_index = result;
+                this.buffer = "";
+                this.choosing_section = true;
               }
+
             }
 
-
+            // If buffer is a plausible number to delete by index
             else if (this.buffer.match(/^\d{1,2}$/g) && this.course_code === "") {
+
+              // If number is in valid range
               if (1 <= parseInt(this.buffer) && parseInt(this.buffer) <= selected_courses[selected_term].length) {
+
                 this.selected_course_index = parseInt(this.buffer) - 1;
                 this.course_code = selected_courses[selected_term][this.selected_course_index]["codificacion"];
                 this.reset_screen(true);
-
-              }
-              else {
+                this.choosing_section = true;
+              } else {
                 this.footer_text = "Curso solicitado está en BLANCO";
                 this.buffer = "";
                 this.course_code = "";
                 this.selected_course_index = -1;
+                this.choosing_section = false;
               }
             }
 
             if (this.course_code !== "") {
 
-              // If user wants to cancel ...
-              if (this.buffer.toLowerCase() === "can") {
-                this.reset_screen();
-                this.course_code = "";
-                this.selected_course_index = -1;
+              if (this.potential_courses.length === 0) {
+                this.update_potential_courses(this.course_code);
+                this.update_right_panel("sections");
+              }
 
-              } else {
+              else if (this.potential_courses.length === 1) {
+                this.footer_text = "No hay otras secciones disponibles";
+              }
 
-
-                if (this.potential_courses.length === 0) {
-                  // Filter potential courses
-                  this.potential_courses = Object.keys(course_list).filter((k) => k.startsWith(this.course_code.trim().toUpperCase()));
-
-                  // Prepare right panel if there are multiple potential courses
-                  if (this.potential_courses.length > 0) {
-                    this.right_panel = [
-                      "SECCIONES DISPONIBLE CURSO: " + course_list[this.potential_courses[0]]["codificacion"],
-                      ""
-                    ];
-
-                    // Add course sections to right panel
-                    for (let i = 0; i < this.potential_courses.length; i++) {
-                      const last_index = this.right_panel.length - 1;
-                      if (this.right_panel[last_index].length < 40) {
-                        this.right_panel[last_index] += course_list[this.potential_courses[i]]["seccion"] + "  ";
-                      } else {
-                        this.right_panel.push(`${course_list[this.potential_courses[i]]["seccion"]}  `);
-                      }
-                    }
-
-                    this.buffer = "";
-                    this.choosing_section = true;
-
-                    // If there are no potential courses, warn the user
-                  } else if (this.potential_courses.length === 0) {
-                    this.footer_text = "Curso no GRADO";
-                    this.buffer = "";
-                  }
-                }
-
-                if (this.potential_courses.length > 1 && this.buffer.length > 0) {
-                  // Try to add course
-                  for (let i = 0; i < this.potential_courses.length; i++) {
-                    if (course_list[this.potential_courses[i]]["seccion"] === this.buffer.toUpperCase().trim()) {
-                      if (add_course(course_list[this.potential_courses[i]])) {
-                        selected_courses[selected_term].splice(this.selected_course_index, 1)
-                        this.course_code = "";
-                        this.selected_course_index = -1;
-                        this.potential_courses = [];
-                        this.reset_screen(true);
-                      } else {
-                        this.footer_text = "Horario de este curso conflige con otro";
-                        this.buffer = "";
-                      }
-
-                      break;
-                    }
-                  }
-                }
-                else if (this.potential_courses.length === 1) {
-                  this.footer_text = "No hay otras secciones disponibles";
-                }
+              else if (this.buffer.length > 0) {
+                this.select_section(this.buffer, this.selected_course_index);
               }
             }
           }
@@ -1036,7 +1064,7 @@ if ((browser !== "Firefox" && browser !== "Safari") && (OSName === "Android" || 
 
 
 
-var current_menu = main_menu;
+var current_menu = term_selection;
 current_menu.refresh();
 
 // ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////
