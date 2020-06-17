@@ -15,7 +15,7 @@ const absolute_height = 24;
 const absolute_width = 80;
 // const body = document.getElementsByTagName("body")[0];
 const container = document.getElementById("container");
-const input = document.getElementsByTagName("input")[0];
+const textarea = document.getElementsByTagName("textarea")[0];
 const enrollment_dates = {
   "1er Sem": "4/may/2019",
   "2do Sem": "23/nov/2019",
@@ -1010,33 +1010,29 @@ if (ua.indexOf("like Mac") !== -1) { OSName = "iOS"; }
 
 
 // Use text input to handle inputs if browser is other than Firefox or Safari or is using phone OS
-// if ((browser !== "Firefox" && browser !== "Safari") && (OSName === "Android" || OSName === "iOS")) {
-input.addEventListener("beforeinput", function (event) {
-  alert(event.data);
-  alert(event.inputType);
+if ((browser !== "Firefox" && browser !== "Safari") && (OSName === "Android" || OSName === "iOS")) {
+  textarea.addEventListener("input", function (event) {
+    switch (event.inputType) {
+      case "insertText":
+        current_menu.handle_input(event.data);
+        break;
+      case "deleteContentForward":
+      case "deleteContentBackward":
+        current_menu.handle_input("Backspace");
+        break;
+      case "insertLineBreak":
+        current_menu.handle_input("Enter");
+        break;
+    }
+    textarea.value = " ";
 
-  switch (event.inputType) {
-    case "insertText":
-      current_menu.handle_input(event.data);
-      break;
-    case "deleteContentForward":
-    case "deleteContentBackward":
-      current_menu.handle_input("Backspace");
-      break;
-    case "insertLineBreak":
-      current_menu.handle_input("Enter");
-
-      break;
-  }
-
-  input.value = "";
-});
-// } else {
-//   document.addEventListener("keydown", function (event) {
-//     current_menu.handle_input(event.key);
-//     input.value = "";
-//   });
-// }
+  });
+} else {
+  document.addEventListener("keydown", function (event) {
+    current_menu.handle_input(event.key);
+    textarea.value = " ";
+  });
+}
 
 
 
