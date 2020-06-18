@@ -22,8 +22,11 @@ const enrollment_dates = {
 };
 const default_user_name = "Juan del Pueblo Rodríguez";
 
+var cursos_1er_sem = {};
+var cursos_verano = {};
+var cursos_2do_sem = {};
+
 var selected_term = "";
-// var selected_term = "2do Sem";
 var credits_selected = 0;
 var student_number = "(802)00-0000";
 var course_list = {};
@@ -44,8 +47,7 @@ var selected_courses = {
   ]
 };
 
-var cursos_1er_sem_2020 = {};
-var cursos_2do_sem_2019 = {};
+
 
 /***
  *       __ __    __               ____              __  _
@@ -107,7 +109,7 @@ function add_course(object) {
     const itinerary = object["horario"][i];
     const [start_time, end_time, days] = parse_itinerary(itinerary);
 
-    let this_terms_courses = selected_courses[selected_term];
+    const this_terms_courses = selected_courses[selected_term];
 
     // Iterate through list of selected courses. End early if it conflicts
     const l1 = this_terms_courses.length;
@@ -129,7 +131,7 @@ function add_course(object) {
         }
 
         // This course ends after another starts and starts before another ends
-        if ((end_time > selected_course_start && start_time < selected_course_end) && same_day) {
+        if (end_time > selected_course_start && start_time < selected_course_end && same_day) {
           conflicts = true;
         }
       }
@@ -215,10 +217,18 @@ function format_date(date_object) {
   return [time, date];
 }
 
+function update_credits() {
+  const courses = selected_courses[selected_term];
+  credits_selected = 0;
+  for (let i = 0, l0 = courses.length; i < l0; i++) {
+    credits_selected += courses[i]["creditos"];
+  }
+}
+
 function get_json(url, callback) {
-  let request = new XMLHttpRequest();
+  const request = new XMLHttpRequest();
   request.onreadystatechange = function () {
-    if (this.readyState == 4 && this.status == 200) {
+    if (this.readyState === 4 && this.status === 200) {
       callback(JSON.parse(request.responseText));
     }
   };
@@ -231,7 +241,7 @@ function header(title, long = true) {
 
   const [time, date] = format_date(today);
 
-  title = centralize(title, absolute_width)
+  title = centralize(title, absolute_width);
 
 
   // Actually compose and return header;
@@ -536,7 +546,7 @@ ${centralize("<<  NO oprimir tecla <Enter> al entrar los datos  >>", 85)}`;
     } else if (key === "Enter" && this.buffer === "6") {
       this.buffer = "";
       current_menu = menu_2;
-      current_menu.refresh()
+      current_menu.refresh();
       changed_menu = true;
     }
 
@@ -578,27 +588,20 @@ var term_selection = {
         current_menu.refresh();
         break;
       case "1":
-        course_list = cursos_1er_sem_2020;
+        course_list = cursos_1er_sem;
         selected_term = "1er Sem";
         current_menu = alta_bajas_cambio;
         current_menu.refresh();
         break;
       case "2":
-        course_list = cursos_2do_sem_2019;
+        course_list = cursos_2do_sem;
         selected_term = "2do Sem";
         current_menu = alta_bajas_cambio;
         current_menu.refresh();
         break;
       case "3":
         // Merge verano 1 and verano extendido courses
-        course_list = {};
-        get_json("./assets/1erVerano2020.json", function (data) {
-          Object.assign(course_list, data);
-        });
-        get_json("./assets/VeranoExtendido2020.json", function (data) {
-          Object.assign(course_list, data);
-        });
-
+        course_list = cursos_verano;
         selected_term = "1er Verano";
         current_menu = alta_bajas_cambio;
         current_menu.refresh();
@@ -695,7 +698,6 @@ Sección seleccionada, (PF3=(8)Secciones Disponibles  CAN=Regresar)
     // Filter potential courses
     this.potential_courses = Object.keys(course_list).filter((name) => name.startsWith(course_name));
 
-
   },
 
   update_right_panel: function (how) {
@@ -733,23 +735,18 @@ Sección seleccionada, (PF3=(8)Secciones Disponibles  CAN=Regresar)
       // Try to add course
       const l0 = this.potential_courses.length;
       for (let i = 0; i < l0; i++) {
-        const current_name = this.potential_courses[i]
+        const current_name = this.potential_courses[i];
 
         if (course_list[current_name]["seccion"] === section) {
-          // Remove previous course before to prevent itinerary conflicts
+          // In case of making section changes, remove old course to prevent conflicts
           let old_course = "";
           if (index !== null) {
             old_course = selected_courses[selected_term][index];
             this.remove_course(index);
-            credits_selected -= course_list[current_name]["creditos"];
-
-
           }
 
           // If course was successfully added
           if (add_course(course_list[current_name])) {
-            credits_selected += course_list[current_name]["creditos"];
-
             // There is no more need for these variables
             this.course_code = "";
             this.selected_course_index = -1;
@@ -762,7 +759,6 @@ Sección seleccionada, (PF3=(8)Secciones Disponibles  CAN=Regresar)
             if (index !== null) {
               // Add previous course again
               add_course(old_course);
-              credits_selected += course_list[current_name]["creditos"];
             }
             this.footer_text = "Horario de este curso conflige con otro";
             this.buffer = "";
@@ -789,10 +785,11 @@ Sección seleccionada, (PF3=(8)Secciones Disponibles  CAN=Regresar)
     const l0 = selected_courses[selected_term].length;
     for (let i = 0; i < l0; i++) {
       if (selected_courses[selected_term][i]["codificacion"] === code) {
-        return i
+        return i;
       }
     }
-    return false;
+
+    return -1;
   },
 
   handle_input: function (key) {
@@ -824,7 +821,7 @@ Sección seleccionada, (PF3=(8)Secciones Disponibles  CAN=Regresar)
             current_menu = main_menu_default;
             main_menu_default.message_key = 9;
             main_menu_default.last_menu = alta_bajas_cambio;
-            current_menu.refresh()
+            current_menu.refresh();
 
             return;
           case "A":
@@ -877,6 +874,14 @@ Sección seleccionada, (PF3=(8)Secciones Disponibles  CAN=Regresar)
             // If the buffer looks like a course code and not choosing sections
             if (this.buffer.match(/[A-Za-z]{4}\d{4}/g) && !this.choosing_section) {
 
+              if (this.search_selected_courses(this.buffer) !== -1) {
+                this.footer_text = "Ya está matriculado en este curso";
+                this.buffer = "";
+                this.choosing_section = false;
+
+                break;
+              }
+
               this.update_potential_courses(this.buffer);
 
               if (this.potential_courses.length > 0) {
@@ -895,13 +900,13 @@ Sección seleccionada, (PF3=(8)Secciones Disponibles  CAN=Regresar)
             } else if (this.choosing_section && this.buffer.length > 0 && this.mode === 1) {
 
               this.select_section(this.buffer);
-
             }
+            update_credits();
           }
 
 
           // UNENROLLING
-          else if (this.mode == 2) {
+          else if (this.mode === 2) {
 
             // If buffer is a plausible number to delete by index
             if (this.buffer.match(/^\d{1,2}$/g)) {
@@ -921,14 +926,16 @@ Sección seleccionada, (PF3=(8)Secciones Disponibles  CAN=Regresar)
             // If buffer looks like a course code and is doing "bajas"
             else if (this.buffer.match(/[A-Za-z]{4}\d{4}/g)) {
               const result = this.search_selected_courses(this.buffer);
-              if (result === false) {
+              if (result === -1) {
                 this.buffer = "";
                 this.footer_text = "Curso NO existe en matrícula";
               } else {
                 this.remove_course(result);
-                this.reset_screen(true)
+                this.reset_screen(true);
               }
             }
+
+            update_credits();
           }
 
 
@@ -944,7 +951,7 @@ Sección seleccionada, (PF3=(8)Secciones Disponibles  CAN=Regresar)
             if (this.buffer.match(/[A-Za-z]{4}\d{4}/g) && this.course_code === "") {
               const result = this.search_selected_courses(this.buffer);
 
-              if (result === false) {
+              if (result === -1) {
                 this.footer_text = "Curso NO existe en matrícula";
                 this.buffer = "";
                 this.course_code = "";
@@ -991,9 +998,19 @@ Sección seleccionada, (PF3=(8)Secciones Disponibles  CAN=Regresar)
               }
 
               else if (this.buffer.length > 0) {
-                this.select_section(this.buffer, this.selected_course_index);
+                const result = this.search_selected_courses(this.course_code);
+
+                if (selected_courses[selected_term][result]["seccion"] !== this.buffer) {
+                  this.select_section(this.buffer, this.selected_course_index);
+                } else {
+                  this.footer_text = "Está seleccionando la misma sección!";
+                  this.buffer = "";
+                }
               }
             }
+
+            update_credits();
+
           }
 
 
@@ -1019,7 +1036,7 @@ var graphical_itinerary = {
       if (courses[i]["horario"].length > 1) {
         for (let j = 1; j < courses[i]["horario"].length; j++) {
           // Clone course
-          let new_course = courses[i].slice();
+          const new_course = courses[i].slice();
           // Only use 1 itinerary
           new_course["horario"] = [courses[i]["horario"][j]];
           // Set credits to 0 to not mess with total credits
@@ -1033,10 +1050,10 @@ var graphical_itinerary = {
 
     courses.sort(function (obj1, obj2) {
 
-      const [start1, end1, days1] = parse_itinerary(obj1["horario"][0]);
-      const [start2, end2, days2] = parse_itinerary(obj2["horario"][0]);
+      const start1 = parse_itinerary(obj1["horario"][0])[0];
+      const start2 = parse_itinerary(obj2["horario"][0])[0];
 
-      return start1.valueOf() - start2.valueOf()
+      return start1.valueOf() - start2.valueOf();
     });
 
     return courses;
@@ -1057,11 +1074,11 @@ var graphical_itinerary = {
     // Add space after
     time = time.replace(":", ": ");
 
-    title = " ".repeat(32) + student_number + "     " + pad_right(default_user_name.toUpperCase(), 35) + "0000 0 (Concentración)"
+    const title = " ".repeat(32) + student_number + "     " + pad_right(default_user_name.toUpperCase(), 35) + "0000 0 (Concentración)";
 
 
 
-    return `     ${date}                    U.P.R. - R.U.M. - Horario Matrícula - ${selected_term} - 2021                     ${time}\n
+    return `     ${date}                    U.P.R. - R.U.M. - Horario Matrícula - ${selected_term} - 2020                     ${time}\n
 ${title}`;
   },
 
@@ -1079,7 +1096,7 @@ ${title}`;
       centralize("Viernes", 18),
       centralize("Sábado", 18)
     ];
-    headers.forEach(function (element, i) {
+    headers.forEach(function (element) {
       table += "|" + element;
     });
 
@@ -1092,23 +1109,19 @@ ${title}`;
 
 
     const amount_courses = selected_courses[selected_term].length.toString();
-    let courses = this.sorted_courses(selected_courses[selected_term].slice());
-    let amount_credits = 0;
+    const courses = this.sorted_courses(selected_courses[selected_term].slice());
 
     // Iterate through courses
     const l0 = courses.length;
     courses.forEach(function (course, i) {
-
-      amount_credits += course["creditos"];
-
       const cell = centralize(course["codificacion"] + "  - " + course["seccion"], 18);
-      const empty_cell = " ".repeat(18)
+      const empty_cell = " ".repeat(18);
 
       // Iterate through the course's itineraries. Most generally there will only be 1 per course
-      course["horario"].forEach(function (current_itinerary, j) {
+      course["horario"].forEach(function (current_itinerary) {
         const [start, end, days] = parse_itinerary(current_itinerary);
-        let [start_time, start_date] = format_date(start);
-        const [end_time, end_date] = format_date(end);
+        let start_time = format_date(start)[0];
+        const end_time = format_date(end)[0];
 
         start_time = start_time.replace(/ (?:am|pm)/, "");
         const periods = centralize(`${start_time}- ${end_time}`, 18);
@@ -1141,7 +1154,7 @@ ${title}`;
 
     table += "|" + "-".repeat(132) + "|\n";
 
-    table += `|${centralize("Cursos   " + amount_courses + "  -  Créditos  " + amount_credits.toString(), 132)}|\n`;
+    table += `|${centralize("Cursos   " + amount_courses + "  -  Créditos  " + credits_selected.toString(), 132)}|\n`;
 
     table += "-".repeat(134);
 
@@ -1160,7 +1173,7 @@ ${title}`;
     current_menu = alta_bajas_cambio;
     current_menu.refresh();
   }
-}
+};
 
 
 /***
@@ -1235,25 +1248,31 @@ textarea.addEventListener("input", function (event) {
 
 
 // TO DO:
-// Preservar solo ...
-// Codificacion
-// Creditos
-// Seccion
-// Horario
 
-// get_json al principio asincrono
+// Pendiente a sección matriculada al momento de añadir y cambiar cursos
 
 var current_menu = main_menu;
 current_menu.refresh();
 
-document.addEventListener('DOMContentLoaded', function () {
 
-  get_json("./assets/1erSem2020.json", function (data) {
-    cursos_1er_sem_2020 = data;
+// On document load request all the course information files
+document.addEventListener('DOMContentLoaded', function () {
+  cursos_1er_sem = {};
+  get_json("./assets/1erSem2020.min.json", function (data) {
+    cursos_1er_sem = data;
   });
 
-  get_json("./assets/2doSem2019.json", function (data) {
-    cursos_2do_sem_2019 = data;
+  cursos_2do_sem = {};
+  get_json("./assets/2doSem2019.min.json", function (data) {
+    cursos_2do_sem = data;
+  });
+
+  cursos_verano = {};
+  get_json("./assets/1erVerano2020.min.json", function (data) {
+    Object.assign(cursos_verano, data);
+  });
+  get_json("./assets/VeranoExtendido2020.min.json", function (data) {
+    Object.assign(cursos_verano, data);
   });
 
 });
