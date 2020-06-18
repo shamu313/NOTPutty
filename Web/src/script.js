@@ -44,6 +44,9 @@ var selected_courses = {
   ]
 };
 
+var cursos_1er_sem_2020 = {};
+var cursos_2do_sem_2019 = {};
+
 /***
  *       __ __    __               ____              __  _
  *      / // /__ / /__  ___ ____  / __/_ _____  ____/ /_(_)__  ___  ___
@@ -575,19 +578,13 @@ var term_selection = {
         current_menu.refresh();
         break;
       case "1":
-        course_list = {};
-        get_json("./assets/1erSem2020.json", function (data) {
-          course_list = data;
-        });
+        course_list = cursos_1er_sem_2020;
         selected_term = "1er Sem";
         current_menu = alta_bajas_cambio;
         current_menu.refresh();
         break;
       case "2":
-        course_list = {};
-        get_json("./assets/2doSem2019.json", function (data) {
-          course_list = data;
-        });
+        course_list = cursos_2do_sem_2019;
         selected_term = "2do Sem";
         current_menu = alta_bajas_cambio;
         current_menu.refresh();
@@ -1220,31 +1217,8 @@ var menu_5 = {
  *                                                                               /_/
  */
 
-const ua = navigator.userAgent;
-console.log(ua);
-//Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/83.0.4103.106 Safari/537.36
 
-let browser = "Unknown Browser";
-let OSName = "Unknown OS";
-
-if (ua.indexOf("Opera") !== -1) { browser = "Opera"; }
-if (ua.indexOf("Firefox") !== -1 && ua.indexOf("Opera") === -1) { browser = "Firefox"; }
-if (ua.indexOf("Chrome") !== -1) { browser = "Chrome"; }
-if (ua.indexOf("Safari") !== -1 && ua.indexOf("Chrome") === -1) { browser = "Safari"; }
-if (ua.indexOf("MSIE") !== -1 && (ua.indexOf("Opera") === -1 && ua.indexOf("Trident") === -1)) { browser = "Internet Explorer"; }
-if (ua.indexOf("Trident") !== -1) { browser = "Internet Explorer"; }
-
-if (ua.indexOf("Win") !== -1) { OSName = "Windows"; }
-if (ua.indexOf("Mac") !== -1) { OSName = "Macintosh"; }
-if (ua.indexOf("Linux") !== -1) { OSName = "Linux"; }
-if (ua.indexOf("Android") !== -1) { OSName = "Android"; }
-if (ua.indexOf("like Mac") !== -1) { OSName = "iOS"; }
-
-
-// Use text input to handle inputs if browser is other than Firefox or Safari or is using phone OS
-// if ((browser !== "Firefox" && browser !== "Safari") && (OSName === "Android" || OSName === "iOS")) {
 textarea.addEventListener("input", function (event) {
-  // alert(event.inputType);
   switch (event.inputType) {
     case "deleteContentForward":
     case "deleteContentBackward":
@@ -1254,22 +1228,35 @@ textarea.addEventListener("input", function (event) {
       current_menu.handle_input("Enter");
       break;
     default:
-      // alert(event.data);
-      current_menu.handle_input(event.data);
+      current_menu.handle_input(event.data.toString().toUpperCase());
   }
   textarea.value = " ";
 });
-// } else {
-//   document.addEventListener("keydown", function (event) {
-//     current_menu.handle_input(event.key);
-//     textarea.value = " ";
-//   });
-// }
 
 
+// TO DO:
+// Preservar solo ...
+// Codificacion
+// Creditos
+// Seccion
+// Horario
 
-var current_menu = term_selection;
+// get_json al principio asincrono
+
+var current_menu = main_menu;
 current_menu.refresh();
+
+document.addEventListener('DOMContentLoaded', function () {
+
+  get_json("./assets/1erSem2020.json", function (data) {
+    cursos_1er_sem_2020 = data;
+  });
+
+  get_json("./assets/2doSem2019.json", function (data) {
+    cursos_2do_sem_2019 = data;
+  });
+
+});
 
 // ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
