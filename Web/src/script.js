@@ -1221,6 +1221,9 @@ var menu_5 = {
  */
 
 const ua = navigator.userAgent;
+console.log(ua);
+//Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/83.0.4103.106 Safari/537.36
+
 let browser = "Unknown Browser";
 let OSName = "Unknown OS";
 
@@ -1241,12 +1244,8 @@ if (ua.indexOf("like Mac") !== -1) { OSName = "iOS"; }
 // Use text input to handle inputs if browser is other than Firefox or Safari or is using phone OS
 // if ((browser !== "Firefox" && browser !== "Safari") && (OSName === "Android" || OSName === "iOS")) {
 textarea.addEventListener("input", function (event) {
-  alert(event.inputType);
-  alert(event.data);
+  // alert(event.inputType);
   switch (event.inputType) {
-    case "insertText":
-      current_menu.handle_input(event.data);
-      break;
     case "deleteContentForward":
     case "deleteContentBackward":
       current_menu.handle_input("Backspace");
@@ -1254,9 +1253,11 @@ textarea.addEventListener("input", function (event) {
     case "insertLineBreak":
       current_menu.handle_input("Enter");
       break;
+    default:
+      // alert(event.data);
+      current_menu.handle_input(event.data);
   }
   textarea.value = " ";
-
 });
 // } else {
 //   document.addEventListener("keydown", function (event) {
