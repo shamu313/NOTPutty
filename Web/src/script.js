@@ -30,17 +30,17 @@ var course_list = {};
 var selected_courses = {
   "1er Sem": [],
   "2do Sem": [
-    cursos_2do_sem_2019["INGE3016-020"],
-    cursos_2do_sem_2019["FISI3171-061"],
-    cursos_2do_sem_2019["FISI3173-086"],
-    cursos_2do_sem_2019["QUIM3132-050"],
-    cursos_2do_sem_2019["QUIM3134-06R"],
-    cursos_2do_sem_2019["INGL3212-101"],
-    cursos_2do_sem_2019["MATE3063-081"]
+    // cursos_2do_sem_2019["INGE3016-020"],
+    // cursos_2do_sem_2019["FISI3171-061"],
+    // cursos_2do_sem_2019["FISI3173-086"],
+    // cursos_2do_sem_2019["QUIM3132-050"],
+    // cursos_2do_sem_2019["QUIM3134-06R"],
+    // cursos_2do_sem_2019["INGL3212-101"],
+    // cursos_2do_sem_2019["MATE3063-081"]
 
   ],
   "1er Verano": [
-    cursos_1er_verano_2020["MATE4009-01A"]
+    // cursos_1er_verano_2020["MATE4009-01A"]
   ]
 };
 
@@ -75,7 +75,6 @@ function pad_left(string, width = absolute_width, character = " ") {
 
   return character.repeat(width - string.length) + string;
 }
-
 
 function parse_itinerary(string) {
   let start_time = "";
@@ -211,6 +210,17 @@ function format_date(date_object) {
   const date = `${day}/${month}/${year}`;
 
   return [time, date];
+}
+
+function get_json(url, callback) {
+  let request = new XMLHttpRequest();
+  request.onreadystatechange = function () {
+    if (this.readyState == 4 && this.status == 200) {
+      callback(JSON.parse(request.responseText));
+    }
+  };
+  request.open('GET', url, true);
+  request.send();
 }
 
 function header(title, long = true) {
@@ -565,13 +575,19 @@ var term_selection = {
         current_menu.refresh();
         break;
       case "1":
-        course_list = cursos_1er_sem_2020;
+        course_list = {};
+        get_json("./assets/1erSem2020.json", function (data) {
+          course_list = data;
+        });
         selected_term = "1er Sem";
         current_menu = alta_bajas_cambio;
         current_menu.refresh();
         break;
       case "2":
-        course_list = cursos_2do_sem_2019;
+        course_list = {};
+        get_json("./assets/2doSem2019.json", function (data) {
+          course_list = data;
+        });
         selected_term = "2do Sem";
         current_menu = alta_bajas_cambio;
         current_menu.refresh();
@@ -579,7 +595,13 @@ var term_selection = {
       case "3":
         // Merge verano 1 and verano extendido courses
         course_list = {};
-        Object.assign(course_list, cursos_1er_verano_2020, cursos_verano_extendido_2020);
+        get_json("./assets/1erVerano2020.json", function (data) {
+          Object.assign(course_list, data);
+        });
+        get_json("./assets/VeranoExtendido2020.json", function (data) {
+          Object.assign(course_list, data);
+        });
+
         selected_term = "1er Verano";
         current_menu = alta_bajas_cambio;
         current_menu.refresh();
@@ -1217,33 +1239,35 @@ if (ua.indexOf("like Mac") !== -1) { OSName = "iOS"; }
 
 
 // Use text input to handle inputs if browser is other than Firefox or Safari or is using phone OS
-if ((browser !== "Firefox" && browser !== "Safari") && (OSName === "Android" || OSName === "iOS")) {
-  textarea.addEventListener("input", function (event) {
-    switch (event.inputType) {
-      case "insertText":
-        current_menu.handle_input(event.data);
-        break;
-      case "deleteContentForward":
-      case "deleteContentBackward":
-        current_menu.handle_input("Backspace");
-        break;
-      case "insertLineBreak":
-        current_menu.handle_input("Enter");
-        break;
-    }
-    textarea.value = " ";
+// if ((browser !== "Firefox" && browser !== "Safari") && (OSName === "Android" || OSName === "iOS")) {
+textarea.addEventListener("input", function (event) {
+  alert(event.inputType);
+  alert(event.data);
+  switch (event.inputType) {
+    case "insertText":
+      current_menu.handle_input(event.data);
+      break;
+    case "deleteContentForward":
+    case "deleteContentBackward":
+      current_menu.handle_input("Backspace");
+      break;
+    case "insertLineBreak":
+      current_menu.handle_input("Enter");
+      break;
+  }
+  textarea.value = " ";
 
-  });
-} else {
-  document.addEventListener("keydown", function (event) {
-    current_menu.handle_input(event.key);
-    textarea.value = " ";
-  });
-}
+});
+// } else {
+//   document.addEventListener("keydown", function (event) {
+//     current_menu.handle_input(event.key);
+//     textarea.value = " ";
+//   });
+// }
 
 
 
-var current_menu = main_menu;
+var current_menu = term_selection;
 current_menu.refresh();
 
 // ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////
