@@ -1301,6 +1301,9 @@ current_menu.refresh();
 
 // On document load request all the course information files
 document.addEventListener('DOMContentLoaded', function () {
+  textarea.focus();
+
+
   cursos_1er_sem = {};
   get_json("./assets/1erSem2020.min.json", function (data) {
     cursos_1er_sem = data;
@@ -1318,6 +1321,7 @@ document.addEventListener('DOMContentLoaded', function () {
   get_json("./assets/VeranoExtendido2020.min.json", function (data) {
     Object.assign(cursos_verano, data);
   });
+
 
 });
 
