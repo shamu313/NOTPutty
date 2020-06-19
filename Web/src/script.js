@@ -494,14 +494,19 @@ ${centralize("<<  NO oprimir tecla <Enter> al entrar los datos  >>", 85)}`;
           this.lines[0] = `<span class="underline">${this.lines[0]}</span>`;
 
           if (this.buffer.length === 9) {
-            if (this.buffer.match(/^\d{9}$/g)) {
-              this.lines[0] = `<span class="white-background">(${this.buffer.slice(0, 3)})${this.buffer.slice(
-                3,
-                5
-              )}-${this.buffer.slice(5, 10)}</span>`;
+            if (this.buffer.match(/^\d{9}$/)) {
+              this.lines[0] = "<span class='white-background'>(" +
+                this.buffer.slice(0, 3) + ")" +
+                this.buffer.slice(3, 5) + "-" +
+                this.buffer.slice(5, 10) + "</span>";
+
               this.buffer = "";
+
+              // Change line from line 1 to 2
               this.current_operation = 1;
+
               student_number = this.lines[0].trim();
+
               this.user_name = centralize(`<span class="white-background"> ${default_user_name.toUpperCase()} </span>`, 80 + 39);
             } else {
               this.buffer = "";
@@ -516,7 +521,9 @@ ${centralize("<<  NO oprimir tecla <Enter> al entrar los datos  >>", 85)}`;
           if (this.buffer.length === 4) {
             if (this.buffer.match(/^\d{4}$/g)) {
               this.lines[this.current_operation] = "<span class='white-background'>****</span>" + " ".repeat(8);
+
               this.current_operation += 1;
+
               this.buffer = "";
             } else {
               this.buffer = "";
@@ -552,7 +559,6 @@ ${centralize("<<  NO oprimir tecla <Enter> al entrar los datos  >>", 85)}`;
 
     // If the menu was changed throughout the previous processes ...
     if (changed_menu) {
-      student_number = this.lines[0].trim();
       this.lines = Array(4).fill("____________");
       this.current_operation = 0;
       this.buffer = "";
@@ -1215,12 +1221,50 @@ var menu_5 = {
         current_menu = main_menu;
         current_menu.refresh();
         break;
+      case "5":
+        current_menu = menu_5_3A;
+        current_menu.refresh();
+        break;
       default:
         display(this, absolute_height - 4);
     }
   }
 
 };
+
+var menu_5_3A = {
+  header: function () {
+    return header("SISTEMA ESTUDIANTIL COLEGIAL", true);
+  },
+
+  body: `\n\n\n         <span class='white-background'>****************************************************************</span>
+         <span class='white-background'>*</span>                                                              <span class='white-background'>*</span>
+         <span class='white-background'>*</span>                                                              <span class='white-background'>*</span>
+         <span class='white-background'>*</span>                                                              <span class='white-background'>*</span>
+         <span class='white-background'>*</span>    Su TURNO  para  seleccion  de  cursos  y  secciones  o    <span class='white-background'>*</span>
+         <span class='white-background'>*</span>                                                              <span class='white-background'>*</span>
+         <span class='white-background'>*</span>    las  fechas   de  los  examenes  finales   los  podran    <span class='white-background'>*</span>
+         <span class='white-background'>*</span>                                                              <span class='white-background'>*</span>
+         <span class='white-background'>*</span>    ver a traves de  Mi Portal Colegial  en  home.uprm.edu    <span class='white-background'>*</span>
+         <span class='white-background'>*</span>                                             -------------    <span class='white-background'>*</span>
+         <span class='white-background'>*</span>                                                              <span class='white-background'>*</span>
+         <span class='white-background'>*</span>                                                              <span class='white-background'>*</span>
+         <span class='white-background'>*</span>                                                              <span class='white-background'>*</span>
+         <span class='white-background'>*</span>                                                              <span class='white-background'>*</span>
+         <span class='white-background'>****************************************************************</span>`,
+
+  footer: "",
+
+  refresh: function () {
+    display(this, absolute_height - 2);
+  },
+
+  handle_input: function (key) {
+    current_menu = menu_5;
+    menu_5.refresh();
+  }
+};
+
 
 /***
  *       __ __             __    ____      ____          __       ___  ____        _      __
@@ -1279,21 +1323,34 @@ document.addEventListener('DOMContentLoaded', function () {
 
 // ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
+
 /*
 
-object.body = `         <span class='white-background'>****************************************************************</span>
-         <span class='white-background'>*</span>                                                              <span class='white-background'>*</span>
-         <span class='white-background'>*</span>                                                              <span class='white-background'>*</span>
-         <span class='white-background'>*</span>                                                              <span class='white-background'>*</span>
-         <span class='white-background'>*</span>    Su TURNO  para  seleccion  de  cursos  y  secciones  o    <span class='white-background'>*</span>
-         <span class='white-background'>*</span>                                                              <span class='white-background'>*</span>
-         <span class='white-background'>*</span>    las  fechas   de  los  examenes  finales   los  podran    <span class='white-background'>*</span>
-         <span class='white-background'>*</span>                                                              <span class='white-background'>*</span>
-         <span class='white-background'>*</span>    ver a traves de  Mi Portal Colegial  en  home.uprm.edu    <span class='white-background'>*</span>
-         <span class='white-background'>*</span>                                             -------------    <span class='white-background'>*</span>
-         <span class='white-background'>*</span>                                                              <span class='white-background'>*</span>
-         <span class='white-background'>*</span>                                                              <span class='white-background'>*</span>
-         <span class='white-background'>*</span>                                                              <span class='white-background'>*</span>
-         <span class='white-background'>*</span>                                                              <span class='white-background'>*</span>
-         <span class='white-background'>****************************************************************</span>`;
-         */
+var template = {
+header: function () {
+return header("[TITLE]", true);
+},
+
+body: "",
+
+footer: "",
+
+refresh: function () {
+this.handle_input(null);
+},
+
+handle_input: function (key) {
+switch (key) {
+case "1":
+// Some method
+break;
+default:
+display(this, absolute_height - 2);
+}
+}
+
+};
+
+
+
+// */
