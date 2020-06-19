@@ -18,7 +18,7 @@ const textarea = document.getElementsByTagName("textarea")[0];
 const enrollment_dates = {
   "1er Sem": "4/may/2019",
   "2do Sem": "23/nov/2019",
-  "1er Verano": "4/may/2019"
+  "1er Verano": "4/may/2019",
 };
 const default_user_name = "Juan del Pueblo Rodríguez";
 
@@ -40,14 +40,11 @@ var selected_courses = {
     // cursos_2do_sem_2019["QUIM3134-06R"],
     // cursos_2do_sem_2019["INGL3212-101"],
     // cursos_2do_sem_2019["MATE3063-081"]
-
   ],
   "1er Verano": [
     // cursos_1er_verano_2020["MATE4009-01A"]
-  ]
+  ],
 };
-
-
 
 /***
  *       __ __    __               ____              __  _
@@ -114,12 +111,14 @@ function add_course(object) {
     // Iterate through list of selected courses. End early if it conflicts
     const l1 = this_terms_courses.length;
     for (let j = 0; j < l1 && !conflicts; j++) {
-
       // Iterate through list of itineraries for selected course
       const l2 = this_terms_courses[j]["horario"].length;
       for (let k = 0; k < l2 && !conflicts; k++) {
-
-        const [selected_course_start, selected_course_end, selected_course_days] = parse_itinerary(this_terms_courses[j]["horario"][k]);
+        const [
+          selected_course_start,
+          selected_course_end,
+          selected_course_days,
+        ] = parse_itinerary(this_terms_courses[j]["horario"][k]);
 
         // Check if itinerary is for same day. End loop early if same day
         let same_day = false;
@@ -131,7 +130,11 @@ function add_course(object) {
         }
 
         // This course ends after another starts and starts before another ends
-        if (end_time > selected_course_start && start_time < selected_course_end && same_day) {
+        if (
+          end_time > selected_course_start &&
+          start_time < selected_course_end &&
+          same_day
+        ) {
           conflicts = true;
         }
       }
@@ -144,7 +147,6 @@ function add_course(object) {
 
     return true;
   } else {
-
     return false;
   }
 }
@@ -232,7 +234,7 @@ function get_json(url, callback) {
       callback(JSON.parse(request.responseText));
     }
   };
-  request.open('GET', url, true);
+  request.open("GET", url, true);
   request.send();
 }
 
@@ -242,7 +244,6 @@ function header(title, long = true) {
   const [time, date] = format_date(today);
 
   title = centralize(title, absolute_width);
-
 
   // Actually compose and return header;
   if (long) {
@@ -352,10 +353,8 @@ var main_menu = {
       default:
         display(this, absolute_height - 4);
     }
-  }
-
+  },
 };
-
 
 var main_menu_default = {
   last_menu: main_menu,
@@ -378,7 +377,7 @@ var main_menu_default = {
        <span class='white-background'>!</span>                                                                      <span class='white-background'>!</span>
        <span class='white-background'>!</span>            de espera para el curso deseado. Dele click a             <span class='white-background'>!</span>
        <span class='white-background'>!</span>                                                                      <span class='white-background'>!</span>
-       <span class='white-background'>!</span>         "Services for Students", luego a "Lista de Espera"           <span class='white-background'>!</span>`
+       <span class='white-background'>!</span>         "Services for Students", luego a "Lista de Espera"           <span class='white-background'>!</span>`,
   },
 
   header: function () {
@@ -394,8 +393,8 @@ var main_menu_default = {
        <span class='white-background'>!</span>   Si desea realizar esta operación vaya a <a href="https://home.uprm.edu">https://home.uprm.edu</a> y    <span class='white-background'>!</span>
        <span class='white-background'>!</span>                                                                      <span class='white-background'>!</span>
        <span class='white-background'>!</span>      Una vez ingrese a su cuenta podrá ${
-      this.messages[this.message_key]
-      }
+         this.messages[this.message_key]
+       }
        <span class='white-background'>!</span>                                                                      <span class='white-background'>!</span>
        <span class='white-background'>!</span>                                                                      <span class='white-background'>!</span>
        <span class='white-background'>!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!</span>`;
@@ -411,8 +410,7 @@ var main_menu_default = {
   handle_input: function (key) {
     current_menu = this.last_menu;
     current_menu.refresh();
-  }
-
+  },
 };
 
 /***
@@ -436,38 +434,40 @@ var menu_2 = {
               --------------------------------------------------
               |                                                |
               |   Número Identificación       : ${
-      this.current_operation === 0 || !this.lines[0].match(/_/g)
-        ? this.lines[0]
-        : "            "
-      }   |
+                this.current_operation === 0 || !this.lines[0].match(/_/g)
+                  ? this.lines[0]
+                  : "            "
+              }   |
               |       Ej. 802999999                            |
               |                                                |
               |   Código de Acceso Permanente : ${
-      this.current_operation === 1 || !this.lines[1].match(/_/g)
-        ? this.lines[1]
-        : "            "
-      }   |
+                this.current_operation === 1 || !this.lines[1].match(/_/g)
+                  ? this.lines[1]
+                  : "            "
+              }   |
               |       Ej. 1234                                 |
               |                                                |
               |   Seguro Social               : ${
-      this.current_operation === 2 || !this.lines[2].match(/_/g)
-        ? this.lines[2]
-        : "            "
-      }   |
+                this.current_operation === 2 || !this.lines[2].match(/_/g)
+                  ? this.lines[2]
+                  : "            "
+              }   |
               |       Ej. 1234  (Últimos 4)                    |
               |                                                |
               |   Fecha Nacimiento            : ${
-      this.current_operation === 3 || !this.lines[3].match(/_/g)
-        ? this.lines[3]
-        : "            "
-      }   |
+                this.current_operation === 3 || !this.lines[3].match(/_/g)
+                  ? this.lines[3]
+                  : "            "
+              }   |
               |       Ej. MMDDAAAA                             |
               |                                                |
               --------------------------------------------------
 ${centralize("<<  NO oprimir tecla <Enter> al entrar los datos  >>", 85)}`;
   },
 
-  footer: `${" ".repeat(35)}<span class='white-background'> [PF1=(6)Refrescar Pantalla    PF4=(9)Fin] </span>`,
+  footer: `${" ".repeat(
+    35
+  )}<span class='white-background'> [PF1=(6)Refrescar Pantalla    PF4=(9)Fin] </span>`,
 
   refresh: function () {
     this.handle_input(null);
@@ -495,10 +495,14 @@ ${centralize("<<  NO oprimir tecla <Enter> al entrar los datos  >>", 85)}`;
 
           if (this.buffer.length === 9) {
             if (this.buffer.match(/^\d{9}$/)) {
-              this.lines[0] = "<span class='white-background'>(" +
-                this.buffer.slice(0, 3) + ")" +
-                this.buffer.slice(3, 5) + "-" +
-                this.buffer.slice(5, 10) + "</span>";
+              this.lines[0] =
+                "<span class='white-background'>(" +
+                this.buffer.slice(0, 3) +
+                ")" +
+                this.buffer.slice(3, 5) +
+                "-" +
+                this.buffer.slice(5, 10) +
+                "</span>";
 
               this.buffer = "";
 
@@ -507,7 +511,10 @@ ${centralize("<<  NO oprimir tecla <Enter> al entrar los datos  >>", 85)}`;
 
               student_number = this.lines[0].trim();
 
-              this.user_name = centralize(`<span class="white-background"> ${default_user_name.toUpperCase()} </span>`, 80 + 39);
+              this.user_name = centralize(
+                `<span class="white-background"> ${default_user_name.toUpperCase()} </span>`,
+                80 + 39
+              );
             } else {
               this.buffer = "";
               this.lines[0] = "_".repeat(12);
@@ -520,7 +527,8 @@ ${centralize("<<  NO oprimir tecla <Enter> al entrar los datos  >>", 85)}`;
         case 2:
           if (this.buffer.length === 4) {
             if (this.buffer.match(/^\d{4}$/g)) {
-              this.lines[this.current_operation] = "<span class='white-background'>****</span>" + " ".repeat(8);
+              this.lines[this.current_operation] =
+                "<span class='white-background'>****</span>" + " ".repeat(8);
 
               this.current_operation += 1;
 
@@ -532,7 +540,11 @@ ${centralize("<<  NO oprimir tecla <Enter> al entrar los datos  >>", 85)}`;
           }
           break;
         case 3:
-          this.lines[3] = "<span class='underline'>" + this.buffer + " ".repeat(12 - this.buffer.length) + "</span>";
+          this.lines[3] =
+            "<span class='underline'>" +
+            this.buffer +
+            " ".repeat(12 - this.buffer.length) +
+            "</span>";
 
           if (this.buffer.length === 8) {
             if (this.buffer.match(/^\d{8}$/g)) {
@@ -567,10 +579,8 @@ ${centralize("<<  NO oprimir tecla <Enter> al entrar los datos  >>", 85)}`;
     } else {
       display(this, absolute_height - 1);
     }
-  }
-
+  },
 };
-
 
 var term_selection = {
   header: function () {
@@ -615,10 +625,8 @@ var term_selection = {
       default:
         display(this, absolute_height - 2);
     }
-  }
-
+  },
 };
-
 
 var alta_bajas_cambio = {
   mode: 0,
@@ -649,8 +657,14 @@ var alta_bajas_cambio = {
   },
 
   body: function () {
-    return ` ${student_number}  ${this.user_name + " ".repeat(25 - this.user_name.length)}       0000-0  00 ${enrollment_dates[selected_term]} Crs. TTY
-                                                           2:00 pm    ${pad_left(credits_selected, 2, "0")}   04
+    return ` ${student_number}  ${
+      this.user_name + " ".repeat(25 - this.user_name.length)
+    }       0000-0  00 ${enrollment_dates[selected_term]} Crs. TTY
+                                                           2:00 pm    ${pad_left(
+                                                             credits_selected,
+                                                             2,
+                                                             "0"
+                                                           )}   04
      C U R S O   Sección  Cr. Grado
 ${this.body_list}`;
   },
@@ -660,7 +674,9 @@ ${this.body_list}`;
 
   action_footer: function () {
     return `${centralize(this.footer_text, 80)}
-Abreviatura y número de curso  o  FIN                                  [${this.mode === 1 ? "Altas" : this.mode === 2 ? "Bajas" : "Cambio"}]
+Abreviatura y número de curso  o  FIN                                  [${
+      this.mode === 1 ? "Altas" : this.mode === 2 ? "Bajas" : "Cambio"
+    }]
 <span class="underline">${pad_right(this.buffer, 10)}</span>`;
   },
 
@@ -668,7 +684,6 @@ Abreviatura y número de curso  o  FIN                                  [${this.
     return `${centralize(this.footer_text, 80)}
 Sección seleccionada, (PF3=(8)Secciones Disponibles  CAN=Regresar)
 <span class="underline">${pad_right(this.buffer, 10)}</span>`;
-
   },
 
   footer: "",
@@ -682,18 +697,24 @@ Sección seleccionada, (PF3=(8)Secciones Disponibles  CAN=Regresar)
       this.body_list += pad_left(i.toString(), 2) + ".  ";
       if (selected_courses[selected_term].length > i - 1) {
         const course = selected_courses[selected_term][i - 1];
-        this.body_list += `${pad_right(course["codificacion"], 10)}   ${pad_right(course["seccion"], 8)} ${pad_right(course["creditos"], 4)} ${course["grado"] === "Sub-graduados" ? "S" : "G"}   █`;
+        this.body_list += `${pad_right(
+          course["codificacion"],
+          10
+        )}   ${pad_right(course["seccion"], 8)} ${pad_right(
+          course["creditos"],
+          4
+        )} ${course["grado"] === "Sub-graduados" ? "S" : "G"}   █`;
       }
 
       // Also potentially print right panel
       if (this.right_panel[i - 1] !== undefined) {
         const lines = this.body_list.split(/\n/g);
         const last_line = lines.length - 1;
-        this.body_list += " ".repeat(41 - lines[last_line].length) + this.right_panel[i - 1];
+        this.body_list +=
+          " ".repeat(41 - lines[last_line].length) + this.right_panel[i - 1];
       }
-      this.body_list += '\n';
+      this.body_list += "\n";
     }
-
 
     this.handle_input(null);
   },
@@ -702,8 +723,9 @@ Sección seleccionada, (PF3=(8)Secciones Disponibles  CAN=Regresar)
     course_name = course_name.toString().trim().toUpperCase();
 
     // Filter potential courses
-    this.potential_courses = Object.keys(course_list).filter((name) => name.startsWith(course_name));
-
+    this.potential_courses = Object.keys(course_list).filter((name) =>
+      name.startsWith(course_name)
+    );
   },
 
   update_right_panel: function (how) {
@@ -712,17 +734,21 @@ Sección seleccionada, (PF3=(8)Secciones Disponibles  CAN=Regresar)
       // Prepare right panel if there are multiple potential courses
       if (this.potential_courses.length > 0) {
         this.right_panel = [
-          "SECCIONES DISPONIBLE CURSO: " + course_list[this.potential_courses[0]]["codificacion"],
-          ""
+          "SECCIONES DISPONIBLE CURSO: " +
+            course_list[this.potential_courses[0]]["codificacion"],
+          "",
         ];
 
         // Add course sections to right panel
         for (let i = 0; i < this.potential_courses.length; i++) {
           const last_index = this.right_panel.length - 1;
           if (this.right_panel[last_index].length < 40) {
-            this.right_panel[last_index] += course_list[this.potential_courses[i]]["seccion"] + "  ";
+            this.right_panel[last_index] +=
+              course_list[this.potential_courses[i]]["seccion"] + "  ";
           } else {
-            this.right_panel.push(`${course_list[this.potential_courses[i]]["seccion"]}  `);
+            this.right_panel.push(
+              `${course_list[this.potential_courses[i]]["seccion"]}  `
+            );
           }
         }
       }
@@ -735,9 +761,7 @@ Sección seleccionada, (PF3=(8)Secciones Disponibles  CAN=Regresar)
     // If user wants to cancel ...
     if (section === "CAN") {
       this.reset_screen();
-
     } else {
-
       // Try to add course
       const l0 = this.potential_courses.length;
       for (let i = 0; i < l0; i++) {
@@ -760,8 +784,7 @@ Sección seleccionada, (PF3=(8)Secciones Disponibles  CAN=Regresar)
             this.choosing_section = false;
 
             this.reset_screen(true);
-          }
-          else {
+          } else {
             if (index !== null) {
               // Add previous course again
               add_course(old_course);
@@ -778,7 +801,6 @@ Sección seleccionada, (PF3=(8)Secciones Disponibles  CAN=Regresar)
       this.footer_text = "Sección Inválida. Pruebe otra";
       this.buffer = "";
     }
-
   },
 
   remove_course: function (i) {
@@ -799,7 +821,6 @@ Sección seleccionada, (PF3=(8)Secciones Disponibles  CAN=Regresar)
   },
 
   handle_input: function (key) {
-
     switch (this.mode) {
       case 0:
         switch (key) {
@@ -868,18 +889,18 @@ Sección seleccionada, (PF3=(8)Secciones Disponibles  CAN=Regresar)
           }
 
           this.refresh();
-
         } else if (typeof key === "string" && key === "Enter") {
           if (this.buffer.trim().toLowerCase() === "fin") {
             this.reset_screen();
-
           }
 
           // ENROLLING
           else if (this.mode === 1) {
             // If the buffer looks like a course code and not choosing sections
-            if (this.buffer.match(/[A-Za-z]{4}\d{4}/g) && !this.choosing_section) {
-
+            if (
+              this.buffer.match(/[A-Za-z]{4}\d{4}/g) &&
+              !this.choosing_section
+            ) {
               if (this.search_selected_courses(this.buffer) !== -1) {
                 this.footer_text = "Ya está matriculado en este curso";
                 this.buffer = "";
@@ -903,23 +924,25 @@ Sección seleccionada, (PF3=(8)Secciones Disponibles  CAN=Regresar)
               this.update_right_panel("sections");
 
               // If is choosing sections and there are potential courses
-            } else if (this.choosing_section && this.buffer.length > 0 && this.mode === 1) {
-
+            } else if (
+              this.choosing_section &&
+              this.buffer.length > 0 &&
+              this.mode === 1
+            ) {
               this.select_section(this.buffer);
             }
             update_credits();
           }
 
-
           // UNENROLLING
           else if (this.mode === 2) {
-
             // If buffer is a plausible number to delete by index
             if (this.buffer.match(/^\d{1,2}$/g)) {
-
               // If number is in valid range
-              if (1 <= parseInt(this.buffer) && parseInt(this.buffer) <= selected_courses[selected_term].length) {
-
+              if (
+                1 <= parseInt(this.buffer) &&
+                parseInt(this.buffer) <= selected_courses[selected_term].length
+              ) {
                 this.remove_course(parseInt(this.buffer) - 1);
                 this.footer_text = "";
                 this.reset_screen(true);
@@ -944,7 +967,6 @@ Sección seleccionada, (PF3=(8)Secciones Disponibles  CAN=Regresar)
             update_credits();
           }
 
-
           // CAMBIO
           else if (this.mode === 3) {
             if (this.course_code === undefined) {
@@ -952,9 +974,11 @@ Sección seleccionada, (PF3=(8)Secciones Disponibles  CAN=Regresar)
               this.selected_course_index = -1;
             }
 
-
             // Extract course code and index for the course to be changed
-            if (this.buffer.match(/[A-Za-z]{4}\d{4}/g) && this.course_code === "") {
+            if (
+              this.buffer.match(/[A-Za-z]{4}\d{4}/g) &&
+              this.course_code === ""
+            ) {
               const result = this.search_selected_courses(this.buffer);
 
               if (result === -1) {
@@ -963,24 +987,29 @@ Sección seleccionada, (PF3=(8)Secciones Disponibles  CAN=Regresar)
                 this.course_code = "";
                 this.selected_course_index = -1;
                 this.choosing_section = false;
-
               } else {
                 this.course_code = this.buffer.trim().toUpperCase();
                 this.selected_course_index = result;
                 this.buffer = "";
                 this.choosing_section = true;
               }
-
             }
 
             // If buffer is a plausible number to delete by index
-            else if (this.buffer.match(/^\d{1,2}$/g) && this.course_code === "") {
-
+            else if (
+              this.buffer.match(/^\d{1,2}$/g) &&
+              this.course_code === ""
+            ) {
               // If number is in valid range
-              if (1 <= parseInt(this.buffer) && parseInt(this.buffer) <= selected_courses[selected_term].length) {
-
+              if (
+                1 <= parseInt(this.buffer) &&
+                parseInt(this.buffer) <= selected_courses[selected_term].length
+              ) {
                 this.selected_course_index = parseInt(this.buffer) - 1;
-                this.course_code = selected_courses[selected_term][this.selected_course_index]["codificacion"];
+                this.course_code =
+                  selected_courses[selected_term][this.selected_course_index][
+                    "codificacion"
+                  ];
                 this.reset_screen(true);
                 this.choosing_section = true;
               } else {
@@ -993,20 +1022,18 @@ Sección seleccionada, (PF3=(8)Secciones Disponibles  CAN=Regresar)
             }
 
             if (this.course_code !== "") {
-
               if (this.potential_courses.length === 0) {
                 this.update_potential_courses(this.course_code);
                 this.update_right_panel("sections");
-              }
-
-              else if (this.potential_courses.length === 1) {
+              } else if (this.potential_courses.length === 1) {
                 this.footer_text = "No hay otras secciones disponibles";
-              }
-
-              else if (this.buffer.length > 0) {
+              } else if (this.buffer.length > 0) {
                 const result = this.search_selected_courses(this.course_code);
 
-                if (selected_courses[selected_term][result]["seccion"] !== this.buffer) {
+                if (
+                  selected_courses[selected_term][result]["seccion"] !==
+                  this.buffer
+                ) {
                   this.select_section(this.buffer, this.selected_course_index);
                 } else {
                   this.footer_text = "Está seleccionando la misma sección!";
@@ -1016,21 +1043,16 @@ Sección seleccionada, (PF3=(8)Secciones Disponibles  CAN=Regresar)
             }
 
             update_credits();
-
           }
-
 
           this.refresh();
         }
 
         break;
-
     }
     display(this, absolute_height - 5);
-  }
-
+  },
 };
-
 
 var graphical_itinerary = {
   sorted_courses: function (courses) {
@@ -1055,7 +1077,6 @@ var graphical_itinerary = {
     }
 
     courses.sort(function (obj1, obj2) {
-
       const start1 = parse_itinerary(obj1["horario"][0])[0];
       const start2 = parse_itinerary(obj2["horario"][0])[0];
 
@@ -1065,10 +1086,8 @@ var graphical_itinerary = {
     return courses;
   },
 
-
   header: function () {
     let [time, date] = format_date(new Date(Date.now()));
-
 
     // Substitute slashes with unique dummy characters
     date = date.replace("/", "**");
@@ -1080,16 +1099,18 @@ var graphical_itinerary = {
     // Add space after
     time = time.replace(":", ": ");
 
-    const title = " ".repeat(32) + student_number + "     " + pad_right(default_user_name.toUpperCase(), 35) + "0000 0 (Concentración)";
-
-
+    const title =
+      " ".repeat(32) +
+      student_number +
+      "     " +
+      pad_right(default_user_name.toUpperCase(), 35) +
+      "0000 0 (Concentración)";
 
     return `     ${date}                    U.P.R. - R.U.M. - Horario Matrícula - ${selected_term} - 2020                     ${time}\n
 ${title}`;
   },
 
   body: function () {
-
     // Prepare borders and header
     let table = "-".repeat(134) + "\n";
 
@@ -1100,7 +1121,7 @@ ${title}`;
       centralize("Miércoles", 18),
       centralize("Jueves", 18),
       centralize("Viernes", 18),
-      centralize("Sábado", 18)
+      centralize("Sábado", 18),
     ];
     headers.forEach(function (element) {
       table += "|" + element;
@@ -1113,14 +1134,18 @@ ${title}`;
     // Begin preparing body of table
     const empty_row = ("|" + " ".repeat(18)).repeat(headers.length) + "|\n";
 
-
     const amount_courses = selected_courses[selected_term].length.toString();
-    const courses = this.sorted_courses(selected_courses[selected_term].slice());
+    const courses = this.sorted_courses(
+      selected_courses[selected_term].slice()
+    );
 
     // Iterate through courses
     const l0 = courses.length;
     courses.forEach(function (course, i) {
-      const cell = centralize(course["codificacion"] + "  - " + course["seccion"], 18);
+      const cell = centralize(
+        course["codificacion"] + "  - " + course["seccion"],
+        18
+      );
       const empty_cell = " ".repeat(18);
 
       // Iterate through the course's itineraries. Most generally there will only be 1 per course
@@ -1134,39 +1159,63 @@ ${title}`;
 
         table += `|${centralize(periods, 18)}`;
 
-        if (days.includes("l")) { table += `|${cell}`; }
-        else { table += `|${empty_cell}`; }
+        if (days.includes("l")) {
+          table += `|${cell}`;
+        } else {
+          table += `|${empty_cell}`;
+        }
 
-        if (days.includes("m")) { table += `|${cell}`; }
-        else { table += `|${empty_cell}`; }
+        if (days.includes("m")) {
+          table += `|${cell}`;
+        } else {
+          table += `|${empty_cell}`;
+        }
 
-        if (days.includes("w")) { table += `|${cell}`; }
-        else { table += `|${empty_cell}`; }
+        if (days.includes("w")) {
+          table += `|${cell}`;
+        } else {
+          table += `|${empty_cell}`;
+        }
 
-        if (days.includes("j")) { table += `|${cell}`; }
-        else { table += `|${empty_cell}`; }
+        if (days.includes("j")) {
+          table += `|${cell}`;
+        } else {
+          table += `|${empty_cell}`;
+        }
 
-        if (days.includes("v")) { table += `|${cell}`; }
-        else { table += `|${empty_cell}`; }
+        if (days.includes("v")) {
+          table += `|${cell}`;
+        } else {
+          table += `|${empty_cell}`;
+        }
 
-        if (days.includes("s")) { table += `|${cell}`; }
-        else { table += `|${empty_cell}`; }
+        if (days.includes("s")) {
+          table += `|${cell}`;
+        } else {
+          table += `|${empty_cell}`;
+        }
 
         table += "|\n";
       });
 
-      if (i < l0 - 1) { table += empty_row; }
+      if (i < l0 - 1) {
+        table += empty_row;
+      }
     });
 
     table += "|" + "-".repeat(132) + "|\n";
 
-    table += `|${centralize("Cursos   " + amount_courses + "  -  Créditos  " + credits_selected.toString(), 132)}|\n`;
+    table += `|${centralize(
+      "Cursos   " +
+        amount_courses +
+        "  -  Créditos  " +
+        credits_selected.toString(),
+      132
+    )}|\n`;
 
     table += "-".repeat(134);
 
-
     return table;
-
   },
 
   footer: "",
@@ -1178,9 +1227,8 @@ ${title}`;
   handle_input: function (key) {
     current_menu = alta_bajas_cambio;
     current_menu.refresh();
-  }
+  },
 };
-
 
 /***
  *             __  ___                ____
@@ -1221,6 +1269,10 @@ var menu_5 = {
         current_menu = main_menu;
         current_menu.refresh();
         break;
+      case "4":
+        current_menu = menu_5_3B;
+        current_menu.refresh();
+        break;
       case "5":
         current_menu = menu_5_3A;
         current_menu.refresh();
@@ -1228,8 +1280,7 @@ var menu_5 = {
       default:
         display(this, absolute_height - 4);
     }
-  }
-
+  },
 };
 
 var menu_5_3A = {
@@ -1262,9 +1313,42 @@ var menu_5_3A = {
   handle_input: function (key) {
     current_menu = menu_5;
     menu_5.refresh();
-  }
+  },
 };
 
+var menu_5_3B = {
+  header: function () {
+    return header("* MATRICULA 2do sem 2019-2020 *", false);
+  },
+  body: function () {
+    return `     
+      
+  `;
+    ////////////////////
+    //AQUI ME QUEDEEE
+    /////////////////
+  },
+
+  footer: ` * Cursos :  $$       Cr▒ditos :  $$
+--Leyenda: @ =  No cumple con los prerrequisitos o correquisitos
+  & = Curso aprobado o matriculado actualmente
+Sec.= Secci▒n cerrada                Oprima << Enter >> para Finalizar`,
+
+  refresh: function () {
+    this.handle_input(null);
+  },
+
+  handle_input: function (key) {
+    switch (key) {
+      case "Enter":
+        current_menu = menu_5;
+        current_menu.refresh();
+        break;
+      default:
+        display(this, absolute_height - 4);
+    }
+  },
+};
 
 /***
  *       __ __             __    ____      ____          __       ___  ____        _      __
@@ -1273,7 +1357,6 @@ var menu_5_3A = {
  *    /_//_/\__/\_,_/_/  \__/  |_____/  /___/\___/\_,_/_/  \___/_/  /___/\__/_/ /_/ .__/\__/
  *                                                                               /_/
  */
-
 
 textarea.addEventListener("input", function (event) {
   switch (event.inputType) {
@@ -1290,7 +1373,6 @@ textarea.addEventListener("input", function (event) {
   textarea.value = " ";
 });
 
-
 // TO DO:
 
 // Pendiente a sección matriculada al momento de añadir y cambiar cursos
@@ -1298,11 +1380,9 @@ textarea.addEventListener("input", function (event) {
 var current_menu = main_menu;
 current_menu.refresh();
 
-
 // On document load request all the course information files
-document.addEventListener('DOMContentLoaded', function () {
+document.addEventListener("DOMContentLoaded", function () {
   textarea.focus();
-
 
   cursos_1er_sem = {};
   get_json("./assets/1erSem2020.min.json", function (data) {
@@ -1321,12 +1401,9 @@ document.addEventListener('DOMContentLoaded', function () {
   get_json("./assets/VeranoExtendido2020.min.json", function (data) {
     Object.assign(cursos_verano, data);
   });
-
-
 });
 
 // ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-
 
 /*
 
