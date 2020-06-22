@@ -1329,10 +1329,10 @@ var menu_5_3B = {
     /////////////////
   },
 
-  footer: ` * Cursos :  $$       Cr▒ditos :  $$
+  footer: ` * Cursos :  $$       Créditos :  $$
 --Leyenda: @ =  No cumple con los prerrequisitos o correquisitos
   & = Curso aprobado o matriculado actualmente
-Sec.= Secci▒n cerrada                Oprima << Enter >> para Finalizar`,
+Sec.= Sección cerrada                Oprima << Enter >> para Finalizar`,
 
   refresh: function () {
     this.handle_input(null);
