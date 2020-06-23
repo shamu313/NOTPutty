@@ -1315,24 +1315,30 @@ var menu_5_3A = {
     menu_5.refresh();
   },
 };
-
+selected_courses[selected_term] = []; //ultima modificacion
+credits_selected = 0;
 var menu_5_3B = {
   header: function () {
-    return header("* MATRICULA 2do sem 2019-2020 *", false);
+    return header(
+      `[CONFIRMADO]             * MATRICULA ${selected_term} 2019-2020 *_____________________`,
+      false
+    );
   },
   body: function () {
-    return `     
+    return `hey
       
   `;
     ////////////////////
     //AQUI ME QUEDEEE
     /////////////////
   },
-
-  footer: ` * Cursos :  $$       Créditos :  $$
---Leyenda: @ =  No cumple con los prerrequisitos o correquisitos
-  & = Curso aprobado o matriculado actualmente
-Sec.= Sección cerrada                Oprima << Enter >> para Finalizar`,
+  footer: function () {
+    const amount_courses = selected_courses[selected_term].length.toString();
+    return `* Cursos :  ${amount_courses}       Créditos : ${credits_selected}
+--Leyenda:  @ =  No cumple con los prerrequisitos o correquisitos
+            & = Curso aprobado o matriculado actualmente
+          Sec.= Sección cerrada             <span class='white-background'>Oprima << Enter >> para Finalizar</span>`;
+  },
 
   refresh: function () {
     this.handle_input(null);
