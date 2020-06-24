@@ -4,6 +4,7 @@ import os
 import re
 import requests
 
+
 if os.path.isfile("courses.json"):
     print("[!] El documento `courses.json` ya existe en este directorio")
     exit()
@@ -54,7 +55,9 @@ if DEBUG:
 #
 
 registrars_link = 'https://www.uprm.edu/registrar/sections/index.php?v1={}&v2=&term={}&a=s&cmd1=Search'
+
 term = '5-2020'
+
 cursos = {}
 # Para cada codificación en la lista de códigos de cursos ...
 for i, code in enumerate(codigos_cursos):
