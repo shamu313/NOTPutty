@@ -46,8 +46,6 @@ var selected_courses = {
   ],
 };
 
-
-
 /***
  *       __ __    __               ____              __  _
  *      / // /__ / /__  ___ ____  / __/_ _____  ____/ /_(_)__  ___  ___
@@ -67,7 +65,6 @@ function centralize(string, width = absolute_width, character = " ") {
   } else {
     return string;
   }
-
 }
 
 function pad_right(string, width = absolute_width, character = " ") {
@@ -411,8 +408,8 @@ var main_menu_default = {
        <span class='white-background'>!</span>   Si desea realizar esta operación vaya a <a href="https://home.uprm.edu">https://home.uprm.edu</a> y    <span class='white-background'>!</span>
        <span class='white-background'>!</span>                                                                      <span class='white-background'>!</span>
        <span class='white-background'>!</span>      Una vez ingrese a su cuenta podrá ${
-      this.messages[this.message_key]
-      }
+         this.messages[this.message_key]
+       }
        <span class='white-background'>!</span>                                                                      <span class='white-background'>!</span>
        <span class='white-background'>!</span>                                                                      <span class='white-background'>!</span>
        <span class='white-background'>!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!</span>`;
@@ -452,31 +449,31 @@ var menu_2 = {
               --------------------------------------------------
               |                                                |
               |   Número Identificación       : ${
-      this.current_operation === 0 || !this.lines[0].match(/_/g)
-        ? this.lines[0]
-        : "            "
-      }   |
+                this.current_operation === 0 || !this.lines[0].match(/_/g)
+                  ? this.lines[0]
+                  : "            "
+              }   |
               |       Ej. 802999999                            |
               |                                                |
               |   Código de Acceso Permanente : ${
-      this.current_operation === 1 || !this.lines[1].match(/_/g)
-        ? this.lines[1]
-        : "            "
-      }   |
+                this.current_operation === 1 || !this.lines[1].match(/_/g)
+                  ? this.lines[1]
+                  : "            "
+              }   |
               |       Ej. 1234                                 |
               |                                                |
               |   Seguro Social               : ${
-      this.current_operation === 2 || !this.lines[2].match(/_/g)
-        ? this.lines[2]
-        : "            "
-      }   |
+                this.current_operation === 2 || !this.lines[2].match(/_/g)
+                  ? this.lines[2]
+                  : "            "
+              }   |
               |       Ej. 1234  (Últimos 4)                    |
               |                                                |
               |   Fecha Nacimiento            : ${
-      this.current_operation === 3 || !this.lines[3].match(/_/g)
-        ? this.lines[3]
-        : "            "
-      }   |
+                this.current_operation === 3 || !this.lines[3].match(/_/g)
+                  ? this.lines[3]
+                  : "            "
+              }   |
               |       Ej. MMDDAAAA                             |
               |                                                |
               --------------------------------------------------
@@ -677,12 +674,12 @@ var alta_bajas_cambio = {
   body: function () {
     return ` ${student_number}  ${
       this.user_name + " ".repeat(25 - this.user_name.length)
-      }       0000-0  00 ${enrollment_dates[selected_term]} Crs. TTY
+    }       0000-0  00 ${enrollment_dates[selected_term]} Crs. TTY
                                                            2:00 pm    ${pad_left(
-        credits_selected,
-        2,
-        "0"
-      )}   04
+                                                             credits_selected,
+                                                             2,
+                                                             "0"
+                                                           )}   04
      C U R S O   Sección  Cr. Grado
 ${this.body_list}`;
   },
@@ -694,7 +691,7 @@ ${this.body_list}`;
     return `${centralize(this.footer_text, 80)}
 Abreviatura y número de curso  o  FIN                                  [${
       this.mode === 1 ? "Altas" : this.mode === 2 ? "Bajas" : "Cambio"
-      }]
+    }]
 <span class="underline">${pad_right(this.buffer, 10)}</span>`;
   },
 
@@ -716,7 +713,10 @@ Sección seleccionada, (PF3=(8)Secciones Disponibles  CAN=Regresar)
 
       if (selected_courses[selected_term].length > i - 1) {
         const course = selected_courses[selected_term][i - 1];
-        this.body_list += `${pad_right(course["codificacion"], 10)}   ${pad_right(course["seccion"], 8)} ${pad_right(
+        this.body_list += `${pad_right(
+          course["codificacion"],
+          10
+        )}   ${pad_right(course["seccion"], 8)} ${pad_right(
           course["creditos"],
           4
         )} ${course["grado"] === "Sub-graduados" ? "S" : "G"}   █`;
@@ -751,7 +751,7 @@ Sección seleccionada, (PF3=(8)Secciones Disponibles  CAN=Regresar)
       if (this.potential_courses.length > 0) {
         this.right_panel = [
           "SECCIONES DISPONIBLE CURSO: " +
-          course_list[this.potential_courses[0]]["codificacion"],
+            course_list[this.potential_courses[0]]["codificacion"],
           "",
         ];
 
@@ -1024,7 +1024,7 @@ Sección seleccionada, (PF3=(8)Secciones Disponibles  CAN=Regresar)
                 this.selected_course_index = parseInt(this.buffer) - 1;
                 this.course_code =
                   selected_courses[selected_term][this.selected_course_index][
-                  "codificacion"
+                    "codificacion"
                   ];
                 this.reset_screen(true);
                 this.choosing_section = true;
@@ -1223,9 +1223,9 @@ ${title}`;
 
     table += `|${centralize(
       "Cursos   " +
-      amount_courses +
-      "  -  Créditos  " +
-      credits_selected.toString(),
+        amount_courses +
+        "  -  Créditos  " +
+        credits_selected.toString(),
       132
     )}|\n`;
 
@@ -1332,23 +1332,44 @@ var menu_5_3A = {
   },
 };
 
-
-
 var menu_5_3B = {
   header: function () {
     return header(
-      `<span class='white-background'>[CONFIRMADO]</span>             * MATRICULA ${selected_term} 2019-2020 *                       `,
+      `[<span class='gray-background'>CONFIRMADA</span>]             * MATRICULA ${selected_term} 2019-2020 *                       `,
       false
     );
   },
-  body: function () {
-    return `hey
 
-  `;
+  body: function () {
+    return `\n${centralize(
+      "${student_number}       Yasuri Yamileth         000-0"
+    )}\n\n    Curso    Sec.  Crs.  Sal▒n     D▒as - Horas         Profesor\n    -----    ----  ----  -----     ------------         --------\n${body_list}
+    `;
+
     ////////////////////
     //AQUI ME QUEDEEE
     /////////////////
+  },
+  refresh: function () {
+    this.body_list = "";
 
+    // Print list of selected courses
+    for (let i = 1; i <= 12; i++) {
+      this.body_list += pad_left(i.toString(), 2) + ".  ";
+
+      if (selected_courses[selected_term].length > i - 1) {
+        const course = selected_courses[selected_term][i - 1];
+        this.body_list += `${pad_right(
+          course["codificacion"],
+          10
+        )}   ${pad_right(course["seccion"], 8)} ${pad_right(
+          course["creditos"],
+          4
+        )} ${course["grado"] === "Sub-graduados" ? "S" : "G"}   █`;
+      }
+      this.body_list += "\n";
+    }
+    this.handle_input(null);
   },
   footer: function () {
     update_credits();
@@ -1360,12 +1381,7 @@ var menu_5_3B = {
           Sec.= Sección cerrada             <span class='white-background'>Oprima << Enter >> para Finalizar</span>`;
   },
 
-  refresh: function () {
-    this.handle_input(null);
-  },
-
   handle_input: function (key) {
-
     // **!! Change every semester !!** **!! Change every semester !!**
     if (selected_term === "") {
       selected_term = "1er Sem";
@@ -1404,7 +1420,6 @@ textarea.addEventListener("input", function (event) {
   }
   textarea.value = " ";
 });
-
 
 var current_menu = main_menu;
 current_menu.refresh();

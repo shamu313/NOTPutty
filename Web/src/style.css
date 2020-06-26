@@ -48,3 +48,6 @@ textarea:focus {
     font-size: 2vw;
   }
 }
+.gray-background{
+  background: gray;
+}
