@@ -26,18 +26,16 @@ const alternativas_nombres = [
   "Yasuri Yamileth",
   "Juan del Pueblo Rodríguez",
   "Benito Antonio Martínez Ocasio",
-  "Karen",          // 😂
-  "Bob Esponja",    // Sponge Bob
-  "Michael Scott",  // The Office
+  "Karen", // 😂
+  "Bob Esponja", // Sponge Bob
+  "Michael Scott", // The Office
   "Dwight Schrute", // The Office
-  "Leslie Knope",   // Parks and Recreation
-  "Jake Peralta",   // Brooklyn 99
+  "Leslie Knope", // Parks and Recreation
+  "Jake Peralta", // Brooklyn 99
 ];
 
-const default_user_name = alternativas_nombres[
-  Math.floor(Math.random() * alternativas_nombres.length)
-];
-
+const default_user_name =
+  alternativas_nombres[Math.floor(Math.random() * alternativas_nombres.length)];
 
 var cursos_1er_sem = {};
 var cursos_verano = {};
@@ -384,7 +382,7 @@ var main_menu = {
         current_menu.refresh();
         break;
       default:
-        display(this, absolute_height - 4);
+        display(this, -4);
     }
   },
 };
@@ -426,8 +424,8 @@ var main_menu_default = {
        <span class='white-background'>!</span>   Si desea realizar esta operación vaya a <a href="https://home.uprm.edu">https://home.uprm.edu</a> y    <span class='white-background'>!</span>
        <span class='white-background'>!</span>                                                                      <span class='white-background'>!</span>
        <span class='white-background'>!</span>      Una vez ingrese a su cuenta podrá ${
-      this.messages[this.message_key]
-      }
+         this.messages[this.message_key]
+       }
        <span class='white-background'>!</span>                                                                      <span class='white-background'>!</span>
        <span class='white-background'>!</span>                                                                      <span class='white-background'>!</span>
        <span class='white-background'>!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!</span>`;
@@ -437,7 +435,7 @@ var main_menu_default = {
     " ".repeat(22) + "&lt;&lt;Presione cualquier tecla para salir&gt;&gt;",
 
   refresh: function () {
-    display(this, absolute_height - 4);
+    display(this, -4);
   },
 
   handle_input: function (key) {
@@ -467,31 +465,31 @@ var menu_2 = {
               --------------------------------------------------
               |                                                |
               |   Número Identificación       : ${
-      this.current_operation === 0 || !this.lines[0].match(/_/g)
-        ? this.lines[0]
-        : "            "
-      }   |
+                this.current_operation === 0 || !this.lines[0].match(/_/g)
+                  ? this.lines[0]
+                  : "            "
+              }   |
               |       Ej. 802999999                            |
               |                                                |
               |   Código de Acceso Permanente : ${
-      this.current_operation === 1 || !this.lines[1].match(/_/g)
-        ? this.lines[1]
-        : "            "
-      }   |
+                this.current_operation === 1 || !this.lines[1].match(/_/g)
+                  ? this.lines[1]
+                  : "            "
+              }   |
               |       Ej. 1234                                 |
               |                                                |
               |   Seguro Social               : ${
-      this.current_operation === 2 || !this.lines[2].match(/_/g)
-        ? this.lines[2]
-        : "            "
-      }   |
+                this.current_operation === 2 || !this.lines[2].match(/_/g)
+                  ? this.lines[2]
+                  : "            "
+              }   |
               |       Ej. 1234  (Últimos 4)                    |
               |                                                |
               |   Fecha Nacimiento            : ${
-      this.current_operation === 3 || !this.lines[3].match(/_/g)
-        ? this.lines[3]
-        : "            "
-      }   |
+                this.current_operation === 3 || !this.lines[3].match(/_/g)
+                  ? this.lines[3]
+                  : "            "
+              }   |
               |       Ej. MMDDAAAA                             |
               |                                                |
               --------------------------------------------------
@@ -610,7 +608,7 @@ ${centralize("<<  NO oprimir tecla <Enter> al entrar los datos  >>", 85)}`;
 
       // if not, we can update the screen
     } else {
-      display(this, absolute_height - 1);
+      display(this, -1);
     }
   },
 };
@@ -656,7 +654,7 @@ var term_selection = {
         current_menu.refresh();
         break;
       default:
-        display(this, absolute_height - 2);
+        display(this, -2);
     }
   },
 };
@@ -683,7 +681,6 @@ var alta_bajas_cambio = {
       this.potential_courses = [];
       this.footer = this.default_footer;
     }
-
   },
 
   header: function () {
@@ -693,12 +690,12 @@ var alta_bajas_cambio = {
   body: function () {
     return ` ${student_number}  ${
       this.user_name + " ".repeat(30 - this.user_name.length)
-      }  0000-0  00 ${enrollment_dates[selected_term]} Crs. TTY
+    }  0000-0  00 ${enrollment_dates[selected_term]} Crs. TTY
                                                            2:00 pm    ${pad_left(
-        credits_selected,
-        2,
-        "0"
-      )}   04
+                                                             credits_selected,
+                                                             2,
+                                                             "0"
+                                                           )}   04
      C U R S O   Sección  Cr. Grado
 ${this.body_list}`;
   },
@@ -710,7 +707,7 @@ ${this.body_list}`;
     return `${centralize(this.footer_text, 80)}
 Abreviatura y número de curso  o  FIN                                  [${
       this.mode === 1 ? "Altas" : this.mode === 2 ? "Bajas" : "Cambio"
-      }]
+    }]
 <span class="underline">${pad_right(this.buffer, 10)}</span>`;
   },
 
@@ -770,7 +767,7 @@ Sección seleccionada, (PF3=(8)Secciones Disponibles  CAN=Regresar)
       if (this.potential_courses.length > 0) {
         this.right_panel = [
           "SECCIONES DISPONIBLE CURSO: " +
-          course_list[this.potential_courses[0]]["codificacion"],
+            course_list[this.potential_courses[0]]["codificacion"],
           "",
         ];
 
@@ -1043,7 +1040,7 @@ Sección seleccionada, (PF3=(8)Secciones Disponibles  CAN=Regresar)
                 this.selected_course_index = parseInt(this.buffer) - 1;
                 this.course_code =
                   selected_courses[selected_term][this.selected_course_index][
-                  "codificacion"
+                    "codificacion"
                   ];
                 this.reset_screen(true);
                 this.choosing_section = true;
@@ -1242,9 +1239,9 @@ ${title}`;
 
     table += `|${centralize(
       "Cursos   " +
-      amount_courses +
-      "  -  Créditos  " +
-      credits_selected.toString(),
+        amount_courses +
+        "  -  Créditos  " +
+        credits_selected.toString(),
       132
     )}|\n`;
 
@@ -1351,7 +1348,6 @@ var menu_5_3A = {
   },
 };
 
-
 var menu_5_3B = {
   body_list: "",
 
@@ -1365,7 +1361,9 @@ var menu_5_3B = {
   body: function () {
     return `\n${centralize(
       student_number + "       Yasuri Yamileth         000-0"
-    )}\n\n    Curso    Sec.  Crs.  Salón     Días - Horas         Profesor\n    -----    ----  ----  -----     ------------         --------\n${this.body_list}
+    )}\n\n     Curso    Sec.  Crs.  Salón     Días - Horas         Profesor\n     -----    ----  ----  -----     ------------         --------\n${
+      this.body_list
+    }
     `;
 
     ////////////////////
@@ -1373,9 +1371,6 @@ var menu_5_3B = {
     /////////////////
   },
   refresh: function () {
-
-
-
     // **!! Change every semester !!** **!! Change every semester !!**
     if (selected_term === "") {
       selected_term = "1er Sem";
@@ -1385,7 +1380,7 @@ var menu_5_3B = {
     /////////////////////////////////////////////////
     selected_courses[selected_term] = [
       cursos_1er_sem["INGE3016-001D"],
-      cursos_1er_sem["FISI3171-010"],
+      cursos_1er_sem["ADMI3009-020H"],
     ];
     /////////////////////////////////////////////////
     ////////////////////////////////////////////////
@@ -1394,17 +1389,45 @@ var menu_5_3B = {
 
     // Print list of selected courses
     for (let i = 1; i <= 12; i++) {
-      this.body_list += pad_left(i.toString(), 2) + ".  ";
-
+      this.body_list += "& ";
+      //faltarian 2 espacios para que todo alinie
       if (selected_courses[selected_term].length > i - 1) {
         const course = selected_courses[selected_term][i - 1];
         this.body_list += `${pad_right(
-          course["codificacion"],
-          10
-        )}   ${pad_right(course["seccion"], 8)} ${pad_right(
-          course["creditos"],
+          course["codificacion"].slice(0, 4),
+          5
+        )}${pad_right(course["codificacion"].slice(4), 7)}${pad_right(
+          course["seccion"],
+          6
+        )} ${pad_right(course["creditos"], 4)} ${pad_right(
+          course["salon"].toString(),
+          8
+        )} ${pad_right(course["horario"].toString().slice(18), 6)} ${pad_right(
+          course["horario"].toString().slice(0, 4),
           4
-        )} ${course["grado"] === "Sub-graduados" ? "S" : "G"}   █`;
+          //eliminate white-spaces from string//
+        )}${pad_right(
+          course["horario"]
+            .toString()
+            .slice(8, 18)
+            .toLowerCase()
+            .replace(/ /g, ""),
+          7
+        )} ${pad_right(
+          course["profesor"].toString().toUpperCase().split(" ")[1],
+          6
+        )} ${pad_right(
+          course["profesor"].toString().toUpperCase().split(" ")[2],
+          6
+          // comma in-between last names and name//
+        )}, ${pad_right(
+          course["profesor"]
+            .toString()
+            .toUpperCase()
+            .split(" ")[0]
+            .slice(0, 80 - window.screenX), //verificar para que el nombre no pase del anocho max.
+          6
+        )}`;
       }
       this.body_list += "\n";
     }
@@ -1465,20 +1488,20 @@ document.addEventListener("DOMContentLoaded", function () {
   textarea.focus();
 
   cursos_1er_sem = {};
-  get_json("./assets/1erSem2020.min.json", function (data) {
+  get_json("./assets/1erSem2020.json", function (data) {
     cursos_1er_sem = data;
   });
 
   cursos_2do_sem = {};
-  get_json("./assets/2doSem2019.min.json", function (data) {
+  get_json("./assets/2doSem2019.json", function (data) {
     cursos_2do_sem = data;
   });
 
   cursos_verano = {};
-  get_json("./assets/1erVerano2020.min.json", function (data) {
+  get_json("./assets/1erVerano2020.json", function (data) {
     Object.assign(cursos_verano, data);
   });
-  get_json("./assets/VeranoExtendido2020.min.json", function (data) {
+  get_json("./assets/VeranoExtendido2020.json", function (data) {
     Object.assign(cursos_verano, data);
   });
 });
