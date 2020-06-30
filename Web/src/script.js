@@ -382,7 +382,7 @@ var main_menu = {
         current_menu.refresh();
         break;
       default:
-        display(this, -4);
+        display(this, absolute_height - 4);
     }
   },
 };
@@ -435,7 +435,7 @@ var main_menu_default = {
     " ".repeat(22) + "&lt;&lt;Presione cualquier tecla para salir&gt;&gt;",
 
   refresh: function () {
-    display(this, -4);
+    display(this, absolute_height - 4);
   },
 
   handle_input: function (key) {
@@ -608,7 +608,7 @@ ${centralize("<<  NO oprimir tecla <Enter> al entrar los datos  >>", 85)}`;
 
       // if not, we can update the screen
     } else {
-      display(this, -1);
+      display(this, absolute_height - 1);
     }
   },
 };
@@ -654,7 +654,7 @@ var term_selection = {
         current_menu.refresh();
         break;
       default:
-        display(this, -2);
+        display(this, absolute_height - 2);
     }
   },
 };
