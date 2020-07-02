@@ -25,7 +25,7 @@ const enrollment_dates = {
 const alternativas_nombres = [
   "Yasuri Yamileth",
   "Juan del Pueblo Rodríguez",
-  "Benito Antonio Martínez Ocasio",
+  "Benito Antonio Martínez", //made it shorter to avoid weird spacing while centralizing tittle
   "Karen", // 😂
   "Bob Esponja", // Sponge Bob
   "Michael Scott", // The Office
@@ -1357,14 +1357,13 @@ var menu_5_3B = {
       false
     );
   },
-
   body: function () {
-    return `\n${centralize(
-      student_number + "       Yasuri Yamileth         000-0"
-    )}\n\n     Curso    Sec.  Crs.  Salón     Días - Horas         Profesor\n     -----    ----  ----  -----     ------------         --------\n${
+    return `\n ${" ".repeat(5) + student_number}        ${
+      default_user_name + " ".repeat(34 - default_user_name.length)
+    } [0000   0]
+    \n\n     Curso    Sec.  Crs.  Salón     Días - Horas         Profesor\n     -----    ----  ----  -----     ------------         --------\n${
       this.body_list
-    }
-    `;
+    }`;
 
     ////////////////////
     //AQUI ME QUEDEEE
@@ -1389,7 +1388,9 @@ var menu_5_3B = {
 
     // Print list of selected courses
     for (let i = 1; i <= 12; i++) {
-      this.body_list += "& ";
+      if (i <= selected_courses[selected_term].length) {
+        this.body_list += "& ";
+      }
       //faltarian 2 espacios para que todo alinie
       if (selected_courses[selected_term].length > i - 1) {
         const course = selected_courses[selected_term][i - 1];
