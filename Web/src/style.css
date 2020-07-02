@@ -42,7 +42,6 @@ textarea:focus {
   color: #111111;
   border: none;
 }
-
 @media only screen and (orientation: portrait) {
   body {
     font-size: 2vw;
@@ -50,4 +49,9 @@ textarea:focus {
 }
 .gray-background{
   background: gray;
+}
+.text-limit{
+  width: 8px;
+  white-space: nowrap;
+  overflow:hidden;
 }

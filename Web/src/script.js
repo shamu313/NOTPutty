@@ -298,7 +298,7 @@ function display(object, desired_height) {
   if (typeof object.body === "function") {
     screen = `${object.header()}\n${object.body()}`;
   } else if (typeof object.body === "string") {
-    screen = `${object.header()}\n${object.body}`;
+    screen = `${object.header()}\n${object.body}`; ///////////
   }
 
   // Add newlines until already at desired height
@@ -1369,12 +1369,12 @@ var menu_5_3B = {
     //AQUI ME QUEDEEE
     /////////////////
   },
+
   refresh: function () {
     // **!! Change every semester !!** **!! Change every semester !!**
     if (selected_term === "") {
       selected_term = "1er Sem";
     }
-
     //////////////////////////////////////////////////
     /////////////////////////////////////////////////
     selected_courses[selected_term] = [
@@ -1391,9 +1391,15 @@ var menu_5_3B = {
       if (i <= selected_courses[selected_term].length) {
         this.body_list += "& ";
       }
-      //faltarian 2 espacios para que todo alinie
       if (selected_courses[selected_term].length > i - 1) {
         const course = selected_courses[selected_term][i - 1];
+        //////////
+        if (course["profesor"].toString().split(" ")[0].length > 10) {
+          text_limit = 10;
+        } else {
+          text_limit = course["profesor"].toString().split(" ")[0].length + 1;
+        }
+        ////////////////
         this.body_list += `${pad_right(
           course["codificacion"].slice(0, 4),
           5
@@ -1426,7 +1432,7 @@ var menu_5_3B = {
             .toString()
             .toUpperCase()
             .split(" ")[0]
-            .slice(0, 80 - window.screenX), //verificar para que el nombre no pase del anocho max.
+            .slice(0, text_limit), //verificar para que el nombre no pase del anocho max.
           6
         )}`;
       }
