@@ -119,8 +119,8 @@ function parse_itinerary(string) {
   match = string.match(/([lmwjvsd]{1,5}$)/g);
   days = match[0];
 
-  start_time = new Date(`January 1, 2000 ${start_time}`);
-  end_time = new Date(`January 1, 2000 ${end_time}`);
+  start_time = new Date(`March 13, 2001 ${start_time}`);
+  end_time = new Date(`March 13, 2001 ${end_time}`);
 
   return [start_time, end_time, days];
 }
@@ -873,6 +873,7 @@ Sección seleccionada, (PF3=(8)Secciones Disponibles  CAN=Regresar)
   },
 
   handle_input: function (key) {
+    alert(key);
     switch (this.mode) {
       case 0:
         switch (key) {
@@ -1418,11 +1419,12 @@ var menu_5_3B = {
         let formatted_prof_name = `${prof_names.slice(1).toString().replace(",", " ")}, ${prof_names[0]}`;
         formatted_prof_name = truncate(formatted_prof_name, 23);
 
-        // if (course["profesor"].toString().split(" ")[0].length > 10) {
-        //   text_limit = 10;
-        // } else {
-        //   text_limit = course["profesor"].toString().split(" ")[0].length + 1;
-        // }
+        // Correjir problemas de anchos de dates inconsistentes
+        // parse_itinerary = array de start, end y dias
+        // format_date() para start y end
+        // Unir hora formateados
+
+
         ////////////////
         this.body_list += `${pad_right(
           course["codificacion"].slice(0, 4),
@@ -1444,7 +1446,7 @@ var menu_5_3B = {
             .toLowerCase()
             .replace(/ /g, ""),
           7
-        )}   ${formatted_prof_name}`;
+        )}   ${pad_right(formatted_prof_name, 23)}`;
       }
       this.body_list += "\n";
     }
@@ -1492,7 +1494,9 @@ textarea.addEventListener("input", function (event) {
       current_menu.handle_input("Enter");
       break;
     default:
-      current_menu.handle_input(event.data.toString().toUpperCase());
+      if (event.data.toString().toLowerCase() !== "null") {
+        current_menu.handle_input(event.data.toString().toUpperCase());
+      }
   }
   textarea.value = " ";
 });
