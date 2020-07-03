@@ -873,7 +873,12 @@ Sección seleccionada, (PF3=(8)Secciones Disponibles  CAN=Regresar)
   },
 
   handle_input: function (key) {
-    alert(key);
+    if (key !== null) {
+      // alert(key);
+      console.log(key);
+    }
+
+
     switch (this.mode) {
       case 0:
         switch (key) {
@@ -1109,27 +1114,40 @@ Sección seleccionada, (PF3=(8)Secciones Disponibles  CAN=Regresar)
 
 var graphical_itinerary = {
   sorted_courses: function (courses) {
+
     // Split multiple course itineraries into multiple different courses
     const l0 = courses.length;
     // Iterate through courses
     for (let i = 0; i < l0; i++) {
+
       // If there are more than 1 itineraries for course ...
       if (courses[i]["horario"].length > 1) {
-        for (let j = 1; j < courses[i]["horario"].length; j++) {
+
+        const l1 = courses[i]["horario"].length;
+        for (let j = 1; j < l1; j++) {
+
           // Clone course
-          const new_course = courses[i].slice();
+          const new_course = JSON.parse(JSON.stringify(courses[i]));
           // Only use 1 itinerary
           new_course["horario"] = [courses[i]["horario"][j]];
           // Set credits to 0 to not mess with total credits
           new_course["creditos"] = 0;
 
           // Clone too just in case
-          courses.push(new_course.slice());
+          courses.push(JSON.parse(JSON.stringify(new_course)));
         }
+
+        // Only keep the first course
+        courses[i]["horario"] = courses[i]["horario"].slice(0, 1);
       }
     }
 
     courses.sort(function (obj1, obj2) {
+      if (obj1["horario"].length === 0) {
+        return 1;
+      } else if (obj2["horario"].length === 0) {
+        return -1;
+      }
       const start1 = parse_itinerary(obj1["horario"][0])[0];
       const start2 = parse_itinerary(obj2["horario"][0])[0];
 
@@ -1164,6 +1182,7 @@ ${title}`;
   },
 
   body: function () {
+
     // Prepare borders and header
     let table = "-".repeat(134) + "\n";
 
@@ -1176,9 +1195,10 @@ ${title}`;
       centralize("Viernes", 18),
       centralize("Sábado", 18),
     ];
-    headers.forEach(function (element) {
-      table += "|" + element;
-    });
+    const l0 = headers.length;
+    for (let i = 0; i < l0; i++) {
+      table += "|" + headers[i];
+    }
 
     table += "|\n";
 
@@ -1193,29 +1213,38 @@ ${title}`;
     );
 
     // Iterate through courses
-    const l0 = courses.length;
-    courses.forEach(function (course, i) {
+    const l1 = courses.length;
+    for (let i = 0; i < l1; i++) {
+      const course = courses[i];
+
+      // Prepare generic cells to be reused later
       const cell = centralize(
-        course["codificacion"] + "  - " + course["seccion"],
+        course["codificacion"] + " - " + course["seccion"],
         18
       );
       const empty_cell = " ".repeat(18);
 
-      // Iterate through the course's itineraries. Most generally there will only be 1 per course
-      for (let k = 0, l1 = course["horario"].length; k < l1; k++) {
-        const current_itinerary = course["horario"][k];
 
-        // Don't consider course if the itinerary is undefined
-        if (current_itinerary === undefined) {
-          continue;
+      // Print empty row if course itinerary's length equals 0
+      if (course["horario"].length === 0) {
+        table += "|" + cell + ("|" + centralize("  ---  ---  ---  ", 18)).repeat(headers.length - 1) + "|\n";
+        if (i < l1 - 1) {
+          table += empty_row;
         }
+        continue;
+      }
+
+      // If there is only one itinerary for the course
+      if (course["horario"].length === 1) {
+
+        const current_itinerary = course["horario"][0];
 
         const [start, end, days] = parse_itinerary(current_itinerary);
         let start_time = format_date(start)[0];
         const end_time = format_date(end)[0];
 
         start_time = start_time.replace(/ (?:am|pm)/, "");
-        const periods = centralize(`${start_time}- ${end_time}`, 18);
+        const periods = centralize(`${start_time.trim()} - ${end_time.trim()}`, 18);
 
         table += `|${centralize(periods, 18)}`;
 
@@ -1258,13 +1287,14 @@ ${title}`;
         table += "|\n";
       };
 
-      if (i < l0 - 1) {
+      if (i < l1 - 1) {
         table += empty_row;
       }
-    });
+    };
 
     table += "|" + "-".repeat(132) + "|\n";
 
+    update_credits();
     table += `|${centralize(
       "Cursos   " +
       amount_courses +
@@ -1494,9 +1524,7 @@ textarea.addEventListener("input", function (event) {
       current_menu.handle_input("Enter");
       break;
     default:
-      if (event.data.toString().toLowerCase() !== "null") {
-        current_menu.handle_input(event.data.toString().toUpperCase());
-      }
+      current_menu.handle_input(event.data.toString().toUpperCase());
   }
   textarea.value = " ";
 });
@@ -1527,7 +1555,8 @@ document.addEventListener("DOMContentLoaded", function () {
   });
 });
 
-// ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+
 
 /*
 
