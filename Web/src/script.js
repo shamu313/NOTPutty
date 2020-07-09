@@ -292,10 +292,8 @@ ${title}`;
 }
 
 function truncate(str, n = 34) {
-
   if (str.length > n) {
-    return str.substr(0, n - 1) + '…';
-
+    return str.substr(0, n - 1) + "…";
   } else {
     return str;
   }
@@ -444,8 +442,8 @@ var main_menu_default = {
        <span class='white-background'>!</span>   Si desea realizar esta operación vaya a <a href="https://home.uprm.edu">https://home.uprm.edu</a> y    <span class='white-background'>!</span>
        <span class='white-background'>!</span>                                                                      <span class='white-background'>!</span>
        <span class='white-background'>!</span>      Una vez ingrese a su cuenta podrá ${
-      this.messages[this.message_key]
-      }
+         this.messages[this.message_key]
+       }
        <span class='white-background'>!</span>                                                                      <span class='white-background'>!</span>
        <span class='white-background'>!</span>                                                                      <span class='white-background'>!</span>
        <span class='white-background'>!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!</span>`;
@@ -485,31 +483,31 @@ var menu_2 = {
               --------------------------------------------------
               |                                                |
               |   Número Identificación       : ${
-      this.current_operation === 0 || !this.lines[0].match(/_/g)
-        ? this.lines[0]
-        : "            "
-      }   |
+                this.current_operation === 0 || !this.lines[0].match(/_/g)
+                  ? this.lines[0]
+                  : "            "
+              }   |
               |       Ej. 802999999                            |
               |                                                |
               |   Código de Acceso Permanente : ${
-      this.current_operation === 1 || !this.lines[1].match(/_/g)
-        ? this.lines[1]
-        : "            "
-      }   |
+                this.current_operation === 1 || !this.lines[1].match(/_/g)
+                  ? this.lines[1]
+                  : "            "
+              }   |
               |       Ej. 1234                                 |
               |                                                |
               |   Seguro Social               : ${
-      this.current_operation === 2 || !this.lines[2].match(/_/g)
-        ? this.lines[2]
-        : "            "
-      }   |
+                this.current_operation === 2 || !this.lines[2].match(/_/g)
+                  ? this.lines[2]
+                  : "            "
+              }   |
               |       Ej. 1234  (Últimos 4)                    |
               |                                                |
               |   Fecha Nacimiento            : ${
-      this.current_operation === 3 || !this.lines[3].match(/_/g)
-        ? this.lines[3]
-        : "            "
-      }   |
+                this.current_operation === 3 || !this.lines[3].match(/_/g)
+                  ? this.lines[3]
+                  : "            "
+              }   |
               |       Ej. MMDDAAAA                             |
               |                                                |
               --------------------------------------------------
@@ -710,12 +708,12 @@ var alta_bajas_cambio = {
   body: function () {
     return ` ${student_number}  ${
       this.user_name + " ".repeat(30 - this.user_name.length)
-      }  0000-0  00 ${enrollment_dates[selected_term]} Crs. TTY
+    }  0000-0  00 ${enrollment_dates[selected_term]} Crs. TTY
                                                            2:00 pm    ${pad_left(
-        credits_selected,
-        2,
-        "0"
-      )}   04
+                                                             credits_selected,
+                                                             2,
+                                                             "0"
+                                                           )}   04
      C U R S O   Sección  Cr. Grado
 ${this.body_list}`;
   },
@@ -727,7 +725,7 @@ ${this.body_list}`;
     return `${centralize(this.footer_text, 80)}
 Abreviatura y número de curso  o  FIN                                  [${
       this.mode === 1 ? "Altas" : this.mode === 2 ? "Bajas" : "Cambio"
-      }]
+    }]
 <span class="underline">${pad_right(this.buffer, 10)}</span>`;
   },
 
@@ -787,7 +785,7 @@ Sección seleccionada, (PF3=(8)Secciones Disponibles  CAN=Regresar)
       if (this.potential_courses.length > 0) {
         this.right_panel = [
           "SECCIONES DISPONIBLE CURSO: " +
-          course_list[this.potential_courses[0]]["codificacion"],
+            course_list[this.potential_courses[0]]["codificacion"],
           "",
         ];
 
@@ -877,7 +875,6 @@ Sección seleccionada, (PF3=(8)Secciones Disponibles  CAN=Regresar)
       // alert(key);
       console.log(key);
     }
-
 
     switch (this.mode) {
       case 0:
@@ -1066,7 +1063,7 @@ Sección seleccionada, (PF3=(8)Secciones Disponibles  CAN=Regresar)
                 this.selected_course_index = parseInt(this.buffer) - 1;
                 this.course_code =
                   selected_courses[selected_term][this.selected_course_index][
-                  "codificacion"
+                    "codificacion"
                   ];
                 this.reset_screen(true);
                 this.choosing_section = true;
@@ -1114,18 +1111,14 @@ Sección seleccionada, (PF3=(8)Secciones Disponibles  CAN=Regresar)
 
 var graphical_itinerary = {
   sorted_courses: function (courses) {
-
     // Split multiple course itineraries into multiple different courses
     const l0 = courses.length;
     // Iterate through courses
     for (let i = 0; i < l0; i++) {
-
       // If there are more than 1 itineraries for course ...
       if (courses[i]["horario"].length > 1) {
-
         const l1 = courses[i]["horario"].length;
         for (let j = 1; j < l1; j++) {
-
           // Clone course
           const new_course = JSON.parse(JSON.stringify(courses[i]));
           // Only use 1 itinerary
@@ -1182,7 +1175,6 @@ ${title}`;
   },
 
   body: function () {
-
     // Prepare borders and header
     let table = "-".repeat(134) + "\n";
 
@@ -1224,10 +1216,15 @@ ${title}`;
       );
       const empty_cell = " ".repeat(18);
 
-
       // Print empty row if course itinerary's length equals 0
       if (course["horario"].length === 0) {
-        table += "|" + cell + ("|" + centralize("  ---  ---  ---  ", 18)).repeat(headers.length - 1) + "|\n";
+        table +=
+          "|" +
+          cell +
+          ("|" + centralize("  ---  ---  ---  ", 18)).repeat(
+            headers.length - 1
+          ) +
+          "|\n";
         if (i < l1 - 1) {
           table += empty_row;
         }
@@ -1236,7 +1233,6 @@ ${title}`;
 
       // If there is only one itinerary for the course
       if (course["horario"].length === 1) {
-
         const current_itinerary = course["horario"][0];
 
         const [start, end, days] = parse_itinerary(current_itinerary);
@@ -1244,7 +1240,10 @@ ${title}`;
         const end_time = format_date(end)[0];
 
         start_time = start_time.replace(/ (?:am|pm)/, "");
-        const periods = centralize(`${start_time.trim()} - ${end_time.trim()}`, 18);
+        const periods = centralize(
+          `${start_time.trim()} - ${end_time.trim()}`,
+          18
+        );
 
         table += `|${centralize(periods, 18)}`;
 
@@ -1285,21 +1284,21 @@ ${title}`;
         }
 
         table += "|\n";
-      };
+      }
 
       if (i < l1 - 1) {
         table += empty_row;
       }
-    };
+    }
 
     table += "|" + "-".repeat(132) + "|\n";
 
     update_credits();
     table += `|${centralize(
       "Cursos   " +
-      amount_courses +
-      "  -  Créditos  " +
-      credits_selected.toString(),
+        amount_courses +
+        "  -  Créditos  " +
+        credits_selected.toString(),
       132
     )}|\n`;
 
@@ -1418,10 +1417,10 @@ var menu_5_3B = {
   body: function () {
     return `\n ${" ".repeat(5) + student_number}        ${
       default_user_name + " ".repeat(34 - default_user_name.length)
-      } [0000   0]
+    } [0000   0]
     \n\n     Curso    Sec.  Crs.  Salón     Días - Horas         Profesor\n     -----    ----  ----  -----     ------------         --------\n${
       this.body_list
-      }`;
+    }`;
 
     ////////////////////
     //AQUI ME QUEDEEE
@@ -1434,7 +1433,6 @@ var menu_5_3B = {
       selected_term = "1er Sem";
     }
 
-
     this.body_list = "";
 
     // Print list of selected courses
@@ -1442,18 +1440,37 @@ var menu_5_3B = {
       if (i <= selected_courses[selected_term].length) {
         this.body_list += "& ";
       }
+
       if (selected_courses[selected_term].length > i - 1) {
         const course = selected_courses[selected_term][i - 1];
+        ////
+        // if(course['horario'].length === 0){
+        //hay que modiifcar la funcion de parse_itinerary
+        // }
+        console.log(typeof course["horario"][0]);
         //////////
         const prof_names = course["profesor"].toString().split(" ");
-        let formatted_prof_name = `${prof_names.slice(1).toString().replace(",", " ")}, ${prof_names[0]}`;
+        let formatted_prof_name = `${prof_names
+          .slice(1)
+          .toString()
+          .replace(",", " ")}, ${prof_names[0]}`;
         formatted_prof_name = truncate(formatted_prof_name, 23);
+
+        const current_itinerary = course["horario"][0];
+        const [start, end, days] = parse_itinerary(current_itinerary);
+        let start_time = format_date(start)[0];
+        const end_time = format_date(end)[0];
+        start_time = start_time.replace(/ (?:am|pm)/, "");
+        formatted_horario =
+          pad_right(days.toUpperCase(), 6) +
+          pad_right(start_time, 4) +
+          "-" +
+          pad_right(end_time.replace(/ /g, ""), 8);
 
         // Correjir problemas de anchos de dates inconsistentes
         // parse_itinerary = array de start, end y dias
         // format_date() para start y end
         // Unir hora formateados
-
 
         ////////////////
         this.body_list += `${pad_right(
@@ -1465,18 +1482,10 @@ var menu_5_3B = {
         )} ${pad_right(course["creditos"], 4)} ${pad_right(
           course["salon"].toString(),
           8
-        )} ${pad_right(course["horario"].toString().slice(18), 6)} ${pad_right(
-          course["horario"].toString().slice(0, 4),
-          4
-          //eliminate white-spaces from string//
-        )}${pad_right(
-          course["horario"]
-            .toString()
-            .slice(8, 18)
-            .toLowerCase()
-            .replace(/ /g, ""),
-          7
-        )}   ${pad_right(formatted_prof_name, 23)}`;
+        )}${pad_right(formatted_horario, 1)} ${pad_right(
+          formatted_prof_name,
+          23
+        )}`;
       }
       this.body_list += "\n";
     }
@@ -1555,9 +1564,6 @@ document.addEventListener("DOMContentLoaded", function () {
   });
 });
 
-
-
-
 /*
 
 var template = {
@@ -1588,3 +1594,22 @@ display(this, absolute_height - 2);
 
 
 // */
+
+//ultimo cut
+// ${ pad_right(course["horario"].toString().slice(18), 6) } ${
+//   pad_right(
+//     course["horario"].toString().slice(0, 4),
+//     4
+//     //eliminate white-spaces from string//
+//   )
+// } ${
+//   pad_right(
+//     course["horario"]
+//       .toString()
+//       .slice(8, 18)
+//       .toLowerCase()
+//       .replace(/ /g, ""),
+//     7
+//   )
+// }
+//
