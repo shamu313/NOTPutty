@@ -1443,10 +1443,12 @@ var menu_5_3B = {
 
       if (selected_courses[selected_term].length > i - 1) {
         const course = selected_courses[selected_term][i - 1];
-        ////
-        // if(course['horario'].length === 0){
-        //hay que modiifcar la funcion de parse_itinerary
-        // }
+        //
+        counter_horario = 0; //last fix
+        if (course["horario"].length === 0) {
+          counter_horario = 1; //last fix
+          course["horario"][0] = "7:30 AM - 8:20 AM LMWJ";
+        }
         console.log(typeof course["horario"][0]);
         //////////
         const prof_names = course["profesor"].toString().split(" ");
@@ -1461,11 +1463,16 @@ var menu_5_3B = {
         let start_time = format_date(start)[0];
         const end_time = format_date(end)[0];
         start_time = start_time.replace(/ (?:am|pm)/, "");
-        formatted_horario =
-          pad_right(days.toUpperCase(), 6) +
-          pad_right(start_time, 4) +
-          "-" +
-          pad_right(end_time.replace(/ /g, ""), 8);
+        if (counter_horario === 1) {
+          formatted_horario = " ".repeat(20); //last fix
+        } else {
+          //last fix
+          formatted_horario =
+            pad_right(days.toUpperCase(), 6) +
+            pad_right(start_time, 4) +
+            "-" +
+            pad_right(end_time.replace(/ /g, ""), 8);
+        }
 
         // Correjir problemas de anchos de dates inconsistentes
         // parse_itinerary = array de start, end y dias
