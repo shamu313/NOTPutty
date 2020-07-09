@@ -1446,7 +1446,7 @@ var menu_5_3B = {
         //
         counter_horario = 0; //last fix
         if (course["horario"].length === 0) {
-          counter_horario = 1; //last fix
+          counter_horario = true; //last fix
           course["horario"][0] = "7:30 AM - 8:20 AM LMWJ";
         }
         console.log(typeof course["horario"][0]);
@@ -1463,7 +1463,7 @@ var menu_5_3B = {
         let start_time = format_date(start)[0];
         const end_time = format_date(end)[0];
         start_time = start_time.replace(/ (?:am|pm)/, "");
-        if (counter_horario === 1) {
+        if (counter_horario === true) {
           formatted_horario = " ".repeat(20); //last fix
         } else {
           //last fix
@@ -1473,6 +1473,7 @@ var menu_5_3B = {
             "-" +
             pad_right(end_time.replace(/ /g, ""), 8);
         }
+        console.log(formatted_horario.length);
 
         // Correjir problemas de anchos de dates inconsistentes
         // parse_itinerary = array de start, end y dias
@@ -1489,7 +1490,7 @@ var menu_5_3B = {
         )} ${pad_right(course["creditos"], 4)} ${pad_right(
           course["salon"].toString(),
           8
-        )}${pad_right(formatted_horario, 1)} ${pad_right(
+        )}${pad_right(formatted_horario, 20)} ${pad_right(
           formatted_prof_name,
           23
         )}`;
