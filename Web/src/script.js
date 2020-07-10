@@ -332,7 +332,16 @@ function display(object, desired_height, exception = false) {
 
   container.innerHTML = screen;
 }
-
+function WhiteSpace_counter(string) {
+  counter_WhiteSpace = 0;
+  for (i = 0; i < string.length; ++i) {
+    if (string[i] == " ") {
+      counter_WhiteSpace++;
+    }
+    console.log(counter_WhiteSpace);
+  }
+  return counter_WhiteSpace;
+}
 /***
  *       ____                       ____  __     _         __
  *      / __/__________ ___ ___    / __ \/ /    (_)__ ____/ /____
@@ -1421,10 +1430,6 @@ var menu_5_3B = {
     \n\n     Curso    Sec.  Crs.  Salón     Días - Horas         Profesor\n     -----    ----  ----  -----     ------------         --------\n${
       this.body_list
     }`;
-
-    ////////////////////
-    //AQUI ME QUEDEEE
-    /////////////////
   },
 
   refresh: function () {
@@ -1449,9 +1454,19 @@ var menu_5_3B = {
           counter_horario = true; //last fix
           course["horario"][0] = "7:30 AM - 8:20 AM LMWJ";
         }
-        console.log(typeof course["horario"][0]);
+
         //////////
-        const prof_names = course["profesor"].toString().split(" ");
+        prof_names = course["profesor"].toString();
+        if (WhiteSpace_counter(course["profesor"].toString()) >= 3) {
+          prof_names = prof_names.replace(" ", ".");
+          console.log(prof_names);
+        }
+        if (WhiteSpace_counter(course["profesor"].toString()) >= 3) {
+          prof_names = prof_names.split(" ");
+        } else {
+          prof_names = course["profesor"].toString().split(" ");
+        }
+        /////////
         let formatted_prof_name = `${prof_names
           .slice(1)
           .toString()
@@ -1461,26 +1476,29 @@ var menu_5_3B = {
         const current_itinerary = course["horario"][0];
         const [start, end, days] = parse_itinerary(current_itinerary);
         let start_time = format_date(start)[0];
-        const end_time = format_date(end)[0];
+        end_time = format_date(end)[0].replace(/ /g, "");
         start_time = start_time.replace(/ (?:am|pm)/, "");
         if (counter_horario === true) {
           formatted_horario = " ".repeat(20); //last fix
         } else {
+          if (end_time.length === 6) {
+            end_time = " " + end_time;
+          }
           //last fix
           formatted_horario =
             pad_right(days.toUpperCase(), 6) +
             pad_right(start_time, 4) +
             "-" +
-            pad_right(end_time.replace(/ /g, ""), 8);
+            pad_right(end_time, 8);
         }
-        console.log(formatted_horario.length);
-
-        // Correjir problemas de anchos de dates inconsistentes
-        // parse_itinerary = array de start, end y dias
-        // format_date() para start y end
-        // Unir hora formateados
-
-        ////////////////
+        //
+        if (formatted_horario.length === 0) {
+          formatted_horario = "";
+        }
+        if (formatted_prof_name.toString().length === 2) {
+          formatted_prof_name = "";
+        }
+        //
         this.body_list += `${pad_right(
           course["codificacion"].slice(0, 4),
           5
@@ -1490,8 +1508,8 @@ var menu_5_3B = {
         )} ${pad_right(course["creditos"], 4)} ${pad_right(
           course["salon"].toString(),
           8
-        )}${pad_right(formatted_horario, 20)} ${pad_right(
-          formatted_prof_name,
+        )}${pad_right(formatted_horario, 19)} ${pad_right(
+          formatted_prof_name.toUpperCase(),
           23
         )}`;
       }
