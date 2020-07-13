@@ -1375,6 +1375,10 @@ var menu_5 = {
         current_menu = menu_5_3A;
         current_menu.refresh();
         break;
+      case "6":
+        current_menu = menu_5_3C;
+        current_menu.refresh();
+        break;
       default:
         display(this, absolute_height - 4);
     }
@@ -1541,6 +1545,95 @@ var menu_5_3B = {
   },
 };
 
+var menu_5_3C = {
+  header: function () {
+    return header("M A T R I C U L A", true);
+  },
+
+  body: "",
+
+  footer: `<span class='white-background'>Indique Semestre  (1=1erVer   2=1er Sem   3=2doSem   4=2doVer)      [PF4=(9)Fin]</span>`,
+
+  refresh: function () {
+    this.handle_input(null);
+  },
+
+  handle_input: function (key) {
+    switch (key) {
+      case "S":
+      case "s":
+        current_menu = menu_5;
+        current_menu.refresh();
+        break;
+      case "1":
+        course_list = cursos_1er_ver;
+        selected_term = "1er Verano";
+        current_menu = curso_seccion_selection;
+        current_menu.refresh();
+        break;
+      case "2":
+        course_list = cursos_1er_sem;
+        selected_term = "1er Sem";
+        current_menu = curso_seccion_selection;
+        current_menu.refresh();
+        break;
+        //
+      case "3":
+        course_list = cursos_2do_sem;
+        selected_term = "2do Sem";
+        current_menu = curso_seccion_selection;
+        current_menu.refresh();
+        break;
+        // Merge verano 1 and verano extendido courses
+      case "4":
+        course_list = cursos_2do_ver;
+        selected_term = "2do Verano";
+        current_menu = curso_seccion_selection;
+        current_menu.refresh();
+        break;
+      default:
+        display(this, absolute_height - 2);
+    }
+  },
+
+  // refresh: function () {
+  //   this.handle_input(null);
+  // },
+
+  // handle_input: function (key) {
+  //   switch (key) {
+  //     case "S":
+  //     case "s":
+  //       current_menu = main_menu;
+  //       current_menu.refresh();
+  //       break;
+  //     case "1":
+  //       course_list = cursos_1er_sem;
+  //       selected_term = "1er Sem";
+  //       //current_menu = alta_bajas_cambio;
+  //       current_menu.refresh();
+  //       break;
+  //     case "2":
+  //       course_list = cursos_2do_sem;
+  //       selected_term = "2do Sem";
+  //       //current_menu = alta_bajas_cambio;
+  //       current_menu.refresh();
+  //       break;
+  //     case "3":
+  //       // Merge verano 1 and verano extendido courses
+  //       course_list = cursos_verano;
+  //       selected_term = "1er Verano";
+  //       //current_menu = alta_bajas_cambio;
+  //       current_menu.refresh();
+  //       break;
+  //     default:
+  //       display(this, absolute_height - 2);
+  //   }
+  // }
+};
+var curso_seccion_selection= {
+
+};
 /***
  *       __ __             __    ____      ____          __       ___  ____        _      __
  *      / // /__ ___ _____/ /_  / __/___  / __/__  __ __/ / ___  / _/ / __/_______(_)__  / /_
@@ -1580,6 +1673,16 @@ document.addEventListener("DOMContentLoaded", function () {
   get_json("./assets/2doSem2019.json", function (data) {
     cursos_2do_sem = data;
   });
+
+  cursos_1er_ver = {};
+  get_json("./assets/1erVerano2020.json", function (data) {
+    cursos_1er_ver = data;
+  });//
+
+  cursos_2do_ver = {};
+  get_json("./assets/VeranoExtendido2020.json", function (data) {
+    cursos_2do_ver = data;
+  });//
 
   cursos_verano = {};
   get_json("./assets/1erVerano2020.json", function (data) {
