@@ -43,7 +43,12 @@ var cursos_2do_sem = {};
 var selected_term = "";
 var credits_selected = 0;
 var student_number = "(802)00-0000";
+var buffer = "";
+var potential_courses = "";
 var course_list = {};
+var course_exist = "";
+var curso_deseado = "";
+var array_potential_courses = [];
 var selected_courses = {
   "1er Sem": [],
   "2do Sem": [
@@ -1368,7 +1373,7 @@ var menu_5 = {
         current_menu.refresh();
         break;
       case "4":
-        current_menu = menu_5_3B;
+        current_menu = menu_5_3B_login;
         current_menu.refresh();
         break;
       case "5":
@@ -1545,6 +1550,180 @@ var menu_5_3B = {
   },
 };
 
+var menu_5_3B_login = {
+  lines: Array(4).fill("____________"),
+  current_operation: 0,
+  user_name: "",
+  buffer: "",
+  header: function () {
+    return header("E S T U D I A N T E", true);
+  },
+
+  body: function () {
+    return `${this.user_name}
+              --------------------------------------------------
+              |                                                |
+              |   Número Identificación       : ${
+                this.current_operation === 0 || !this.lines[0].match(/_/g)
+                  ? this.lines[0]
+                  : "            "
+              }   |
+              |       Ej. 802999999                            |
+              |                                                |
+              |   Código de Acceso Permanente : ${
+                this.current_operation === 1 || !this.lines[1].match(/_/g)
+                  ? this.lines[1]
+                  : "            "
+              }   |
+              |       Ej. 1234                                 |
+              |                                                |
+              |   Seguro Social               : ${
+                this.current_operation === 2 || !this.lines[2].match(/_/g)
+                  ? this.lines[2]
+                  : "            "
+              }   |
+              |       Ej. 584849999                            |
+              |                                                |
+              |   Fecha Nacimiento            : ${
+                this.current_operation === 3 || !this.lines[3].match(/_/g)
+                  ? this.lines[3]
+                  : "            "
+              }   |
+              |       Ej. MMDDAAAA                             |
+              |                                                |
+              --------------------------------------------------
+${pad_left("[6=Pantalla     ", 85)}\n${pad_left("9=Fin    ]     ", 85)}`;
+  },
+
+  footer: ``,
+
+  refresh: function () {
+    this.handle_input(null);
+  },
+
+  handle_input: function (key) {
+    let changed_menu = false;
+
+    // If is not <Enter>
+    if (typeof key === "string" && key !== "Enter") {
+      // If <Backspace> is pressed
+      if (key === "Backspace" || key === "Delete") {
+        this.buffer = this.buffer.slice(0, -1);
+
+        // Exclude any other keys like <AltGr> and such from being added to buffer
+      } else if (key.length === 1) {
+        this.buffer += key;
+      }
+
+      // Validate inputs and/or go on to next input
+      switch (this.current_operation) {
+        case 0:
+          this.lines[0] = this.buffer + " ".repeat(12 - this.buffer.length);
+          this.lines[0] = `<span class="underline">${this.lines[0]}</span>`;
+
+          if (this.buffer.length === 9) {
+            if (this.buffer.match(/^\d{9}$/)) {
+              this.lines[0] =
+                "<span class='white-background'>(" +
+                this.buffer.slice(0, 3) +
+                ")" +
+                this.buffer.slice(3, 5) +
+                "-" +
+                this.buffer.slice(5, 10) +
+                "</span>";
+
+              this.buffer = "";
+
+              // Change line from line 1 to 2
+              this.current_operation = 1;
+
+              student_number = this.lines[0].trim();
+
+              this.user_name = centralize(
+                `<span class="white-background"> ${default_user_name.toUpperCase()} </span>`,
+                80 + 39
+              );
+            } else {
+              this.buffer = "";
+              this.lines[0] = "_".repeat(12);
+              // DATOS ENTRADOS NO SON CORRECTOS
+            }
+          }
+          break;
+
+        case 1:
+          if (this.buffer.length === 4) {
+            if (this.buffer.match(/^\d{4}$/g)) {
+              this.lines[this.current_operation] =
+                "<span class='white-background'>****</span>" + " ".repeat(8);
+
+              this.current_operation += 1;
+
+              this.buffer = "";
+            } else {
+              this.buffer = "";
+              this.lines[this.current_operation] = "_".repeat(12);
+            }
+          }
+        case 2:
+          if (this.buffer.length === 9) {
+            if (this.buffer.match(/^\d{9}$/g)) {
+              this.lines[this.current_operation] =
+                "<span class='white-background'>*********</span>" +
+                " ".repeat(3);
+
+              this.current_operation += 1;
+
+              this.buffer = "";
+            } else {
+              this.buffer = "";
+              this.lines[this.current_operation] = "_".repeat(12);
+            }
+          }
+          break;
+        case 3:
+          this.lines[3] =
+            "<span class='underline'>" +
+            this.buffer +
+            " ".repeat(12 - this.buffer.length) +
+            "</span>";
+
+          if (this.buffer.length === 8) {
+            if (this.buffer.match(/^\d{8}$/g)) {
+              current_menu = menu_5_3B;
+              current_menu.refresh();
+              changed_menu = true;
+            } else {
+              this.buffer = "";
+              this.lines[3] = "_".repeat(12);
+            }
+          }
+          break;
+      }
+    } else if (key === "Enter" && this.buffer === "9") {
+      current_menu = main_menu;
+      current_menu.refresh();
+      changed_menu = true;
+    } else if (key === "Enter" && this.buffer === "6") {
+      this.buffer = "";
+      current_menu = menu_5;
+      current_menu.refresh();
+      changed_menu = true;
+    }
+
+    // If the menu was changed throughout the previous processes ...
+    if (changed_menu) {
+      this.lines = Array(4).fill("____________");
+      this.current_operation = 0;
+      this.buffer = "";
+
+      // if not, we can update the screen
+    } else {
+      display(this, absolute_height - 1);
+    }
+  },
+};
+
 var menu_5_3C = {
   header: function () {
     return header("* HORARIO DE MATRICULA *", true);
@@ -1567,27 +1746,27 @@ var menu_5_3C = {
       case "1":
         course_list = cursos_1er_ver;
         selected_term = "1er Verano";
-        current_menu = curso_seccion_selection;
+        current_menu = course_selection;
         current_menu.refresh();
         break;
       case "2":
         course_list = cursos_1er_sem;
         selected_term = "1er Sem";
-        current_menu = curso_seccion_selection;
+        current_menu = course_selection;
         current_menu.refresh();
         break;
       //
       case "3":
         course_list = cursos_2do_sem;
         selected_term = "2do Sem";
-        current_menu = curso_seccion_selection;
+        current_menu = course_selection;
         current_menu.refresh();
         break;
       // Merge verano 1 and verano extendido courses
       case "4":
         course_list = cursos_2do_ver;
         selected_term = "2do Verano";
-        current_menu = curso_seccion_selection;
+        current_menu = course_selection;
         current_menu.refresh();
         break;
       default:
@@ -1630,85 +1809,22 @@ var menu_5_3C = {
   //   }
   // }
 };
-var curso_seccion_selection = {
-  mode: 0,
+var course_selection = {
   buffer: "",
-  user_name: "",
-  body_list: "",
   footer_text: "",
-  choosing_section: false,
+  course_code: "",
+  potential_courses: "",
   header: function () {
     return header("* HORARIO DE MATRICULA *", true);
   },
 
   body: "",
 
-  footer: `<span class="white-background">C u r s o    (Ej. QUIM3001L)   Puede indicar solo MATERIA            [PF4=(9)Fin]</span>`,
-
-  action_footer: function () {
-    return `${centralize(this.footer_text, 80)}
-Abreviatura y número de curso  o  FIN                                  
-<span class="underline">${pad_right(this.buffer, 10)}</span>`;
-  },
-
-  section_footer: function () {
-    return `${centralize(this.footer_text, 80)}
-Sección seleccionada, (PF3=(8)Secciones Disponibles  CAN=Regresar)
-<span class="underline">${pad_right(this.buffer, 10)}</span>`;
-  },
-
-  select_section: function (section, index = null) {
-    section = section.toString().trim().toUpperCase();
-
-    // If user wants to cancel ...
-    if (section === "CAN") {
-      this.reset_screen();
-    } else {
-      // Try to add course
-      const l0 = this.potential_courses.length;
-      for (let i = 0; i < l0; i++) {
-        const current_name = this.potential_courses[i];
-
-        if (course_list[current_name]["seccion"] === section) {
-          // In case of making section changes, remove old course to prevent conflicts
-          let old_course = "";
-          if (index !== null) {
-            old_course = selected_courses[selected_term][index];
-            this.remove_course(index);
-          }
-
-          // If course was successfully added
-          if (add_course(course_list[current_name])) {
-            // There is no more need for these variables
-            this.course_code = "";
-            this.selected_course_index = -1;
-            this.potential_courses = [];
-            this.choosing_section = false;
-
-            this.reset_screen(true);
-          } else {
-            if (index !== null) {
-              // Add previous course again
-              add_course(old_course);
-            }
-            this.footer_text = "Horario de este curso conflige con otro";
-            this.buffer = "";
-            this.choosing_section = true;
-          }
-
-          return;
-        }
-      }
-
-      this.footer_text = "Sección Inválida. Pruebe otra";
-      this.buffer = "";
-    }
-  },
-
-  section_footer: function () {
-    return `${centralize(this.footer_text, 80)}
-Sección seleccionada, (PF3=(8)Secciones Disponibles  CAN=Regresar)
-<span class="underline">${pad_right(this.buffer, 10)}</span>`;
+  footer: function () {
+    return `<span class="white-background">C u r s o    (Ej. QUIM3001L)   Puede indicar solo MATERIA            [PF4=(9)Fin]</span>\n<span class="underline">${pad_right(
+      this.buffer,
+      10
+    )}</span>\n${" ".repeat(29)}${course_exist}`;
   },
 
   search_selected_courses: function (code) {
@@ -1728,7 +1844,81 @@ Sección seleccionada, (PF3=(8)Secciones Disponibles  CAN=Regresar)
     this.buffer = "";
     this.body_list = "";
     this.user_name = "";
-    this.choosing_section = false;
+    this.course_code = "";
+    this.footer_text = "";
+  },
+
+  refresh: function () {
+    display(this, absolute_height - 2);
+  },
+
+  update_potential_courses: function (course_name) {
+    course_name = course_name.toString().trim().toUpperCase();
+    // Filter potential courses
+    this.potential_courses = Object.keys(course_list).filter((name) =>
+      name.startsWith(course_name)
+    );
+  },
+
+  handle_input: function (key) {
+    if (typeof key === "string" && key !== "Enter") {
+      // If <Backspace> or <Delete> are pressed
+      if (key === "Backspace" || key === "Delete") {
+        this.buffer = this.buffer.slice(0, -1);
+      } else if (key.length === 1 && this.buffer.length < 10) {
+        // Exclude any other keys like <AltGr> and such from being added to buffer
+        this.buffer += key;
+      }
+      this.refresh();
+    } else if (typeof key === "string" && key === "Enter") {
+      if (this.buffer.trim().toLowerCase() === "fin") {
+        this.reset_screen();
+        current_menu = menu_5_3C;
+        course_exist = "";
+        current_menu.refresh();
+      } else {
+        //course_code = this.buffer;
+        this.update_potential_courses(this.buffer);
+        array_potential_courses = this.potential_courses;
+        console.log(this.potential_courses);
+        if (this.potential_courses.length === 0) {
+          this.reset_screen();
+          course_exist =
+            '<span class="white-background">*** Curso incorrecto ***</span>';
+          this.refresh();
+        } else {
+          course_exist = "";
+          course_code = this.buffer;
+          console.log(potential_courses);
+          current_menu = section_selection;
+          current_menu.refresh();
+        }
+      }
+    }
+  },
+};
+
+var section_selection = {
+  buffer: "",
+  footer_text: "",
+  course_code: "",
+  potential_courses: "",
+  header: function () {
+    return header("* HORARIO DE MATRICULA *", true);
+  },
+
+  body: "",
+
+  footer: function () {
+    return `<span class="white-background">S e c c i o n     (Ej. 001#)${" ".repeat(
+      40
+    )}[PF4=(9)Fin]</span>                                 
+<span class="underline">${pad_right(this.buffer, 10)}</span>`;
+  },
+
+  reset_screen: function () {
+    this.buffer = "";
+    this.course_code = "";
     this.footer_text = "";
   },
 
@@ -1737,244 +1927,42 @@ Sección seleccionada, (PF3=(8)Secciones Disponibles  CAN=Regresar)
   },
 
   handle_input: function (key) {
-    if (key !== null) {
-      // alert(key);
-      console.log(key);
-    }
-
-    switch (this.mode) {
-      case 0:
-        switch (key) {
-          case "S":
-          case "s":
-            this.reset_screen();
-            current_menu = term_selection;
-            current_menu.refresh();
-            // Force return. Otherwise the display at the bottom will force the screen to remain in this menu
-
-            return;
-          case "F":
-          case "f":
-            this.reset_screen();
-            current_menu = graphical_itinerary;
-            current_menu.refresh();
-            // Force return. Otherwise the display at the bottom will force the screen to remain in this menu
-
-            return;
-          case "L":
-          case "l":
-          case "O":
-          case "o":
-            this.reset_screen();
-            current_menu = main_menu_default;
-            main_menu_default.message_key = 9;
-            main_menu_default.last_menu = alta_bajas_cambio;
-            current_menu.refresh();
-
-            return;
-          case "A":
-          case "a":
-            this.mode = 1;
-            this.refresh();
-            break;
-          case "B":
-          case "b":
-            this.mode = 2;
-            this.refresh();
-            break;
-          case "C":
-          case "c":
-            this.mode = 3;
-            this.refresh();
-            break;
-          default:
-            this.footer = this.default_footer;
-        }
-        break;
-      case 1:
-      case 2:
-      case 3:
-        if (this.choosing_section) {
-          this.footer = this.section_footer;
+    if (typeof key === "string" && key !== "Enter") {
+      // If <Backspace> or <Delete> are pressed
+      if (key === "Backspace" || key === "Delete") {
+        this.buffer = this.buffer.slice(0, -1);
+      } else if (key.length === 1 && this.buffer.length < 8) {
+        // Exclude any other keys like <AltGr> and such from being added to buffer
+        this.buffer += key;
+      }
+      this.refresh();
+    } else if (typeof key === "string" && key === "Enter") {
+      if (this.buffer.trim().toLowerCase() === "fin") {
+        this.reset_screen();
+        current_menu = course_selection;
+        current_menu.refresh();
+      } else {
+        //course_code = this.buffer;
+        curso_deseado = course_code + "-" + this.buffer;
+        console.log(array_potential_courses);
+        if (this.buffer.length === 0) {
+          // aparecen todas las secciones del curso disponible
         } else {
-          this.footer = this.action_footer;
+          for (let i = 0; i <= array_potential_courses.length; i++) {
+            if (curso_deseado === array_potential_courses[i]) {
+              current_menu = course_display;
+              current_menu.refresh();
+              break;
+            } else if (i === array_potential_courses.length) {
+              this.reset_screen();
+              this.refresh();
+            }
+          }
         }
-
-        if (typeof key === "string" && key !== "Enter") {
-          // If <Backspace> or <Delete> are pressed
-          if (key === "Backspace" || key === "Delete") {
-            this.buffer = this.buffer.slice(0, -1);
-          } else if (key.length === 1 && this.buffer.length < 10) {
-            // Exclude any other keys like <AltGr> and such from being added to buffer
-            this.buffer += key;
-          }
-
-          this.refresh();
-        } else if (typeof key === "string" && key === "Enter") {
-          if (this.buffer.trim().toLowerCase() === "fin") {
-            this.reset_screen();
-          }
-
-          // ENROLLING
-          else if (this.mode === 1) {
-            // If the buffer looks like a course code and not choosing sections
-            if (
-              this.buffer.match(/[A-Za-z]{4}\d{4}/g) &&
-              !this.choosing_section
-            ) {
-              if (this.search_selected_courses(this.buffer) !== -1) {
-                this.footer_text = "Ya está matriculado en este curso";
-                this.buffer = "";
-                this.choosing_section = false;
-
-                break;
-              }
-
-              this.update_potential_courses(this.buffer);
-
-              if (this.potential_courses.length > 0) {
-                this.footer_text = "";
-                this.choosing_section = true;
-                this.buffer = "";
-              } else {
-                this.footer_text = "Curso no GRADO";
-                this.choosing_section = false;
-                this.buffer = "";
-              }
-
-              this.update_right_panel("sections");
-
-              // If is choosing sections and there are potential courses
-            } else if (
-              this.choosing_section &&
-              this.buffer.length > 0 &&
-              this.mode === 1
-            ) {
-              this.select_section(this.buffer);
-            }
-            update_credits();
-          }
-
-          // UNENROLLING
-          else if (this.mode === 2) {
-            // If buffer is a plausible number to delete by index
-            if (this.buffer.match(/^\d{1,2}$/g)) {
-              // If number is in valid range
-              if (
-                1 <= parseInt(this.buffer) &&
-                parseInt(this.buffer) <= selected_courses[selected_term].length
-              ) {
-                this.remove_course(parseInt(this.buffer) - 1);
-                this.footer_text = "";
-                this.reset_screen(true);
-              } else {
-                this.footer_text = "Curso solicitado está en BLANCO";
-                this.buffer = "";
-              }
-            }
-
-            // If buffer looks like a course code and is doing "bajas"
-            else if (this.buffer.match(/[A-Za-z]{4}\d{4}/g)) {
-              const result = this.search_selected_courses(this.buffer);
-              if (result === -1) {
-                this.buffer = "";
-                this.footer_text = "Curso NO existe en matrícula";
-              } else {
-                this.remove_course(result);
-                this.reset_screen(true);
-              }
-            }
-
-            update_credits();
-          }
-
-          // CAMBIO
-          else if (this.mode === 3) {
-            if (this.course_code === undefined) {
-              this.course_code = "";
-              this.selected_course_index = -1;
-            }
-
-            // Extract course code and index for the course to be changed
-            if (
-              this.buffer.match(/[A-Za-z]{4}\d{4}/g) &&
-              this.course_code === ""
-            ) {
-              const result = this.search_selected_courses(this.buffer);
-
-              if (result === -1) {
-                this.footer_text = "Curso NO existe en matrícula";
-                this.buffer = "";
-                this.course_code = "";
-                this.selected_course_index = -1;
-                this.choosing_section = false;
-              } else {
-                this.course_code = this.buffer.trim().toUpperCase();
-                this.selected_course_index = result;
-                this.buffer = "";
-                this.choosing_section = true;
-              }
-            }
-
-            // If buffer is a plausible number to delete by index
-            else if (
-              this.buffer.match(/^\d{1,2}$/g) &&
-              this.course_code === ""
-            ) {
-              // If number is in valid range
-              if (
-                1 <= parseInt(this.buffer) &&
-                parseInt(this.buffer) <= selected_courses[selected_term].length
-              ) {
-                this.selected_course_index = parseInt(this.buffer) - 1;
-                this.course_code =
-                  selected_courses[selected_term][this.selected_course_index][
-                    "codificacion"
-                  ];
-                this.reset_screen(true);
-                this.choosing_section = true;
-              } else {
-                this.footer_text = "Curso solicitado está en BLANCO";
-                this.buffer = "";
-                this.course_code = "";
-                this.selected_course_index = -1;
-                this.choosing_section = false;
-              }
-            }
-
-            if (this.course_code !== "") {
-              if (this.potential_courses.length === 0) {
-                this.update_potential_courses(this.course_code);
-                this.update_right_panel("sections");
-              } else if (this.potential_courses.length === 1) {
-                this.footer_text = "No hay otras secciones disponibles";
-              } else if (this.buffer.length > 0) {
-                const result = this.search_selected_courses(this.course_code);
-
-                if (
-                  selected_courses[selected_term][result]["seccion"] !==
-                  this.buffer
-                ) {
-                  this.select_section(this.buffer, this.selected_course_index);
-                } else {
-                  this.footer_text = "Está seleccionando la misma sección!";
-                  this.buffer = "";
-                }
-              }
-            }
-
-            update_credits();
-          }
-
-          this.refresh();
-        }
-
-        break;
+      }
     }
-    display(this, absolute_height - 5);
   },
 };
-
 /***
  *       __ __             __    ____      ____          __       ___  ____        _      __
  *      / // /__ ___ _____/ /_  / __/___  / __/__  __ __/ / ___  / _/ / __/_______(_)__  / /_
