@@ -547,6 +547,7 @@ ${centralize("<<  NO oprimir tecla <Enter> al entrar los datos  >>", 85)}`;
 
         // Exclude any other keys like <AltGr> and such from being added to buffer
       } else if (key.length === 1) {
+        key = "0";
         this.buffer += key;
       }
 
