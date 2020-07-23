@@ -456,8 +456,8 @@ var main_menu_default = {
        <span class='white-background'>!</span>   Si desea realizar esta operación vaya a <a href="https://home.uprm.edu">https://home.uprm.edu</a> y    <span class='white-background'>!</span>
        <span class='white-background'>!</span>                                                                      <span class='white-background'>!</span>
        <span class='white-background'>!</span>      Una vez ingrese a su cuenta podrá ${
-         this.messages[this.message_key]
-       }
+      this.messages[this.message_key]
+      }
        <span class='white-background'>!</span>                                                                      <span class='white-background'>!</span>
        <span class='white-background'>!</span>                                                                      <span class='white-background'>!</span>
        <span class='white-background'>!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!</span>`;
@@ -497,31 +497,31 @@ var menu_2 = {
               --------------------------------------------------
               |                                                |
               |   Número Identificación       : ${
-                this.current_operation === 0 || !this.lines[0].match(/_/g)
-                  ? this.lines[0]
-                  : "            "
-              }   |
+      this.current_operation === 0 || !this.lines[0].match(/_/g)
+        ? this.lines[0]
+        : "            "
+      }   |
               |       Ej. 802999999                            |
               |                                                |
               |   Código de Acceso Permanente : ${
-                this.current_operation === 1 || !this.lines[1].match(/_/g)
-                  ? this.lines[1]
-                  : "            "
-              }   |
+      this.current_operation === 1 || !this.lines[1].match(/_/g)
+        ? this.lines[1]
+        : "            "
+      }   |
               |       Ej. 1234                                 |
               |                                                |
               |   Seguro Social               : ${
-                this.current_operation === 2 || !this.lines[2].match(/_/g)
-                  ? this.lines[2]
-                  : "            "
-              }   |
+      this.current_operation === 2 || !this.lines[2].match(/_/g)
+        ? this.lines[2]
+        : "            "
+      }   |
               |       Ej. 1234  (Últimos 4)                    |
               |                                                |
               |   Fecha Nacimiento            : ${
-                this.current_operation === 3 || !this.lines[3].match(/_/g)
-                  ? this.lines[3]
-                  : "            "
-              }   |
+      this.current_operation === 3 || !this.lines[3].match(/_/g)
+        ? this.lines[3]
+        : "            "
+      }   |
               |       Ej. MMDDAAAA                             |
               |                                                |
               --------------------------------------------------
@@ -722,12 +722,12 @@ var alta_bajas_cambio = {
   body: function () {
     return ` ${student_number}  ${
       this.user_name + " ".repeat(30 - this.user_name.length)
-    }  0000-0  00 ${enrollment_dates[selected_term]} Crs. TTY
+      }  0000-0  00 ${enrollment_dates[selected_term]} Crs. TTY
                                                            2:00 pm    ${pad_left(
-                                                             credits_selected,
-                                                             2,
-                                                             "0"
-                                                           )}   04
+        credits_selected,
+        2,
+        "0"
+      )}   04
      C U R S O   Sección  Cr. Grado
 ${this.body_list}`;
   },
@@ -739,7 +739,7 @@ ${this.body_list}`;
     return `${centralize(this.footer_text, 80)}
 Abreviatura y número de curso  o  FIN                                  [${
       this.mode === 1 ? "Altas" : this.mode === 2 ? "Bajas" : "Cambio"
-    }]
+      }]
 <span class="underline">${pad_right(this.buffer, 10)}</span>`;
   },
 
@@ -799,7 +799,7 @@ Sección seleccionada, (PF3=(8)Secciones Disponibles  CAN=Regresar)
       if (this.potential_courses.length > 0) {
         this.right_panel = [
           "SECCIONES DISPONIBLE CURSO: " +
-            course_list[this.potential_courses[0]]["codificacion"],
+          course_list[this.potential_courses[0]]["codificacion"],
           "",
         ];
 
@@ -1077,7 +1077,7 @@ Sección seleccionada, (PF3=(8)Secciones Disponibles  CAN=Regresar)
                 this.selected_course_index = parseInt(this.buffer) - 1;
                 this.course_code =
                   selected_courses[selected_term][this.selected_course_index][
-                    "codificacion"
+                  "codificacion"
                   ];
                 this.reset_screen(true);
                 this.choosing_section = true;
@@ -1310,9 +1310,9 @@ ${title}`;
     update_credits();
     table += `|${centralize(
       "Cursos   " +
-        amount_courses +
-        "  -  Créditos  " +
-        credits_selected.toString(),
+      amount_courses +
+      "  -  Créditos  " +
+      credits_selected.toString(),
       132
     )}|\n`;
 
@@ -1435,10 +1435,10 @@ var menu_5_3B = {
   body: function () {
     return `\n ${" ".repeat(5) + student_number}        ${
       default_user_name + " ".repeat(34 - default_user_name.length)
-    } [0000   0]
+      } [0000   0]
     \n\n     Curso    Sec.  Crs.  Salón     Días - Horas         Profesor\n     -----    ----  ----  -----     ------------         --------\n${
       this.body_list
-    }`;
+      }`;
   },
 
   refresh: function () {
@@ -1564,31 +1564,31 @@ var menu_5_3B_login = {
               --------------------------------------------------
               |                                                |
               |   Número Identificación       : ${
-                this.current_operation === 0 || !this.lines[0].match(/_/g)
-                  ? this.lines[0]
-                  : "            "
-              }   |
+      this.current_operation === 0 || !this.lines[0].match(/_/g)
+        ? this.lines[0]
+        : "            "
+      }   |
               |       Ej. 802999999                            |
               |                                                |
               |   Código de Acceso Permanente : ${
-                this.current_operation === 1 || !this.lines[1].match(/_/g)
-                  ? this.lines[1]
-                  : "            "
-              }   |
+      this.current_operation === 1 || !this.lines[1].match(/_/g)
+        ? this.lines[1]
+        : "            "
+      }   |
               |       Ej. 1234                                 |
               |                                                |
               |   Seguro Social               : ${
-                this.current_operation === 2 || !this.lines[2].match(/_/g)
-                  ? this.lines[2]
-                  : "            "
-              }   |
+      this.current_operation === 2 || !this.lines[2].match(/_/g)
+        ? this.lines[2]
+        : "            "
+      }   |
               |       Ej. 584849999                            |
               |                                                |
               |   Fecha Nacimiento            : ${
-                this.current_operation === 3 || !this.lines[3].match(/_/g)
-                  ? this.lines[3]
-                  : "            "
-              }   |
+      this.current_operation === 3 || !this.lines[3].match(/_/g)
+        ? this.lines[3]
+        : "            "
+      }   |
               |       Ej. MMDDAAAA                             |
               |                                                |
               --------------------------------------------------
@@ -1982,7 +1982,7 @@ var course_display = {
         .slice(0, 8)
         .replace(/(\w{4})/g, "$1 ")
         .replace(/(^\s+|\s+$)/, "")}         ---> ${
-        course_list[curso_deseado]["nombre"]
+      course_list[curso_deseado]["nombre"]
       }\n\nSec.  Salon    Periodos            Crd.  Profesor              Cap.  Uti.  Disp.\n----  -----    --------            ----  --------              ----  ----  -----\n010   Q 251  LWV      7:30- 8:20     3   JORGE LABOY            54    52    02
 011   Q 350  LWV      7:30- 8:20     3   FRANCIS B PATRON GEO   54    53    01
 016   Q 344  MJ       7:30- 8:45     3   NAIRMEN MINA CAMILDE   55    55    00
@@ -2041,7 +2041,7 @@ var course_display_2 = {
         .slice(0, 8)
         .replace(/(\w{4})/g, "$1 ")
         .replace(/(^\s+|\s+$)/, "")}         ---> ${
-        course_list[curso_deseado]["nombre"]
+      course_list[curso_deseado]["nombre"]
       }\n\nSec.  Salon    Periodos            Crd.  Profesor              Cap.  Uti.  Disp.\n----  -----    --------            ----  --------              ----  ----  -----\n060   Q 151  LWV     12:30- 1:20pm   3   ARNALDO CARRASQUIL J   33    33    00
 066   Q 125  MJ      12:30- 1:45pm   3   WANDA I. PEREZ MERCA   44    44    00
 070   Q 245  LWV      1:30- 2:20pm   3   JOSE CORTES FIGUEROA   54    54    00
@@ -2100,7 +2100,7 @@ var course_display_3 = {
         .slice(0, 8)
         .replace(/(\w{4})/g, "$1 ")
         .replace(/(^\s+|\s+$)/, "")}         ---> ${
-        course_list[curso_deseado]["nombre"]
+      course_list[curso_deseado]["nombre"]
       }\n\nSec.  Salon    Periodos            Crd.  Profesor              Cap.  Uti.  Disp.\n----  -----    --------            ----  --------              ----  ----  -----\n
                      * Totales: QUIM 3132     24 secciones    1208  1183    25
 
@@ -2191,36 +2191,7 @@ document.addEventListener("DOMContentLoaded", function () {
   Object.assign(cursos_verano, cursos_2do_ver);
 });
 
-/*
 
-var template = {
-header: function () {
-return header("[TITLE]", true);
-},
-
-body: "",
-
-footer: "",
-
-refresh: function () {
-this.handle_input(null);
-},
-
-handle_input: function (key) {
-switch (key) {
-case "1":
-// Some method
-break;
-default:
-display(this, absolute_height - 2);
-}
-}
-
-};
-
-
-
-// */
 
 //ultimo cut
 // ${ pad_right(course["horario"].toString().slice(18), 6) } ${
