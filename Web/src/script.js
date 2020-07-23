@@ -547,6 +547,7 @@ ${centralize("<<  NO oprimir tecla <Enter> al entrar los datos  >>", 85)}`;
 
         // Exclude any other keys like <AltGr> and such from being added to buffer
       } else if (key.length === 1) {
+        key = "0";
         this.buffer += key;
       }
 
@@ -2191,36 +2192,7 @@ document.addEventListener("DOMContentLoaded", function () {
   Object.assign(cursos_verano, cursos_2do_ver);
 });
 
-/*
-
-var template = {
-header: function () {
-return header("[TITLE]", true);
-},
-
-body: "",
-
-footer: "",
-
-refresh: function () {
-this.handle_input(null);
-},
-
-handle_input: function (key) {
-switch (key) {
-case "1":
-// Some method
-break;
-default:
-display(this, absolute_height - 2);
-}
-}
-
-};
-
-
-
-// */
+//jiji
 
 //ultimo cut
 // ${ pad_right(course["horario"].toString().slice(18), 6) } ${
