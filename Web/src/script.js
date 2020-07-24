@@ -633,6 +633,7 @@ ${centralize("<<  NO oprimir tecla <Enter> al entrar los datos  >>", 85)}`;
       changed_menu = true;
     }
 
+
     // If the menu was changed throughout the previous processes ...
     if (changed_menu) {
       this.lines = Array(4).fill("____________");
@@ -886,10 +887,6 @@ Sección seleccionada, (PF3=(8)Secciones Disponibles  CAN=Regresar)
   },
 
   handle_input: function (key) {
-    if (key !== null) {
-      // alert(key);
-      console.log(key);
-    }
 
     switch (this.mode) {
       case 0:
