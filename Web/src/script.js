@@ -1877,6 +1877,10 @@ var course_selection = {
         current_menu = menu_5_3C;
         course_exist = "";
         current_menu.refresh();
+      } else if (this.buffer.length === 0) {
+        this.reset_screen();
+        current_menu.refresh();
+        this.handle_input(null);
       } else {
         //course_code = this.buffer;
         this.update_potential_courses(this.buffer);
@@ -2036,6 +2040,7 @@ var course_display = {
       let course_limit = 13; //
       if (array_potential_courses.length < 13) {
         course_limit = array_potential_courses.length;
+        counter_done = true;
       }
       for (let i = start_index; i < course_limit; i++) {
         console.log(i);
