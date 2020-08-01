@@ -1989,7 +1989,7 @@ var course_display = {
     // let curso_deseado_formateado = curso_deseado.slice(0, 8).replace(/(\w{4})/g, "$1 ").replace(/^\s+|\s+$)/, "");
 
     let nombre_curso = "";
-    console.log(course_list[array_potential_courses[0]]["nombre"]);
+    //console.log(course_list[array_potential_courses[0]]["nombre"]);
     if (course_list[array_potential_courses[0]]["nombre"] !== undefined) {
       nombre_curso = course_list[array_potential_courses[0]]["nombre"];
     }
@@ -2037,12 +2037,13 @@ var course_display = {
       let number_pages = Math.ceil(array_potential_courses.length / 12);
       let current_page = 1;
       let start_index = (current_page - 1) * 12;
-      let course_limit = 13; //
-      if (array_potential_courses.length < 13) {
+      let course_limit = 12; //
+      if (array_potential_courses.length < 12) {
         course_limit = array_potential_courses.length;
         counter_done = true;
       }
       for (let i = start_index; i < course_limit; i++) {
+        console.log("okokok");
         console.log(i);
         console.log(course_limit);
         course_section_selected = course_list[array_potential_courses[i]];
@@ -2061,7 +2062,7 @@ var course_display = {
           3
         ) {
           prof_names = prof_names.replace(" ", ".");
-          console.log(prof_names);
+          //console.log(prof_names);
         }
 
         if (
@@ -2124,19 +2125,21 @@ var course_display = {
         // console.log(this.body_list);
         this.refresh();
         //
-        if (i === 12 * current_page && current_page < number_pages) {
+        if (i === 12 * current_page - 1 && current_page < number_pages) {
           switch (key) {
             case "Enter":
               console.log(current_page);
               this.body_list = "";
               current_page += 1;
               i = (current_page - 1) * 12;
-              if (course_limit <= current_page * 12) {
+              if (array_potential_courses.length <= current_page * 12) {
                 course_limit = array_potential_courses.length;
               } else {
+                console.log(`course_limit=${course_limit}`);
                 course_limit = current_page * 12;
               }
               this.refresh();
+
               break;
             default:
               this.refresh();
@@ -2145,6 +2148,7 @@ var course_display = {
           current_page === number_pages &&
           i === array_potential_courses.length - 1
         ) {
+          console.log("NOOOOOOOOOOO");
           switch (key) {
             case "Enter":
               console.log("meraaaaa");
