@@ -51,7 +51,8 @@ var curso_deseado = "";
 var array_potential_courses = [];
 var course_code = "";
 var counter_display_all_section = true;
-var selected_courses = {
+var counter_done = false;
+selected_courses = {
   "1er Sem": [],
   "2do Sem": [
     // cursos_2do_sem_2019["INGE3016-020"],
@@ -548,7 +549,7 @@ ${centralize("<<  NO oprimir tecla <Enter> al entrar los datos  >>", 85)}`;
 
         // Exclude any other keys like <AltGr> and such from being added to buffer
       } else if (key.length === 1) {
-        // key = "0";
+        //key = "0"; //por si hay que tener mas seguridad
         this.buffer += key;
       }
 
@@ -1951,6 +1952,7 @@ var section_selection = {
           current_menu = course_display;
           this.reset_screen();
           current_menu.refresh();
+          current_menu.handle_input(null);
         } else {
           for (let i = 0; i <= array_potential_courses.length; i++) {
             if (curso_deseado === array_potential_courses[i]) {
@@ -1958,6 +1960,7 @@ var section_selection = {
               counter_display_all_section = false;
               this.reset_screen();
               current_menu.refresh();
+              current_menu.handle_input(null);
               break;
             } else if (i === array_potential_courses.length) {
               this.reset_screen();
@@ -1977,19 +1980,20 @@ var course_display = {
   },
 
   body: function () {
-    let curso_deseado_formateado = curso_deseado.slice(0, 4) + " " + curso_deseado.slice(4, 8);
+    let curso_deseado_formateado =
+      curso_deseado.slice(0, 4) + " " + curso_deseado.slice(4, 8);
     // let curso_deseado_formateado = curso_deseado.slice(0, 8).replace(/(\w{4})/g, "$1 ").replace(/^\s+|\s+$)/, "");
 
     let nombre_curso = "";
-    if (course_list[curso_deseado] !== undefined) {
-      nombre_curso = course_list[curso_deseado]["nombre"];
+    console.log(course_list[array_potential_courses[0]]["nombre"]);
+    if (course_list[array_potential_courses[0]]["nombre"] !== undefined) {
+      nombre_curso = course_list[array_potential_courses[0]]["nombre"];
     }
 
-
-    return `${" ".repeat(21)}<span class="white-background">ESTADO DE SECCIONES ${selected_term} 2020-2021</span>\n\n${pad_right(
-      `C u r s o:  ${curso_deseado_formateado}         ---> ${nombre_curso}\n\nSec.  Salon    Periodos            Crd.  Profesor               Cap.  Uti.  Disp.\n----  -----    --------            ----  --------               ----  ----  -----\n${
-      this.body_list
-      }
+    return `${" ".repeat(
+      21
+    )}<span class="white-background">ESTADO DE SECCIONES ${selected_term} 2020-2021</span>\n\n${pad_right(
+      `C u r s o:  ${curso_deseado_formateado}         ---> ${nombre_curso}\n\nSec.  Salon    Periodos            Crd.  Profesor               Cap.  Uti.  Disp.\n----  -----    --------            ----  --------               ----  ----  -----\n${this.body_list}
 `
     )}`;
   },
@@ -2007,12 +2011,35 @@ var course_display = {
   },
 
   refresh: function () {
+    display(this, absolute_height - 2);
+  },
+
+  handle_input: function (key) {
+    if (counter_done === true) {
+      switch (key) {
+        case "Enter":
+          console.log("hfduihgdfgdfhgdfg");
+          current_menu = course_selection;
+          current_menu.handle_input(null);
+          current_menu.refresh();
+          counter_done = false;
+          return null;
+      }
+    }
     this.body_list = "";
-    //console.log(array_potential_courses.length);
+    //counter_done=false;
+    console.log("ajaaaaaa");
     if (counter_display_all_section === true) {
-      //number_pages=Math.ceil(array_potential_courses.length/14);
-      // start_index = (p - 1) * 14
-      for (let i = 0; i < array_potential_courses.length; i++) {
+      let number_pages = Math.ceil(array_potential_courses.length / 12);
+      let current_page = 1;
+      let start_index = (current_page - 1) * 12;
+      let course_limit = 13; //
+      if (array_potential_courses.length < 13) {
+        course_limit = array_potential_courses.length;
+      }
+      for (let i = start_index; i < course_limit; i++) {
+        console.log(i);
+        console.log(course_limit);
         course_section_selected = course_list[array_potential_courses[i]];
         //
         counter_horario = false; //last fix
@@ -2036,7 +2063,6 @@ var course_display = {
           WhiteSpace_counter(course_section_selected["profesor"].toString()) >=
           3
         ) {
-
           prof_names = prof_names.split(" ");
         } else {
           prof_names = course_section_selected["profesor"]
@@ -2052,7 +2078,7 @@ var course_display = {
         const current_itinerary = course_section_selected["horario"][0];
         const [start, end, days] = parse_itinerary(current_itinerary);
 
-        let start_time = format_date(start)[0].replace(/ (?:am|pm)/, "");;
+        let start_time = format_date(start)[0].replace(/ (?:am|pm)/, "");
         let end_time = format_date(end)[0].replace(/ /g, "");
 
         if (counter_horario === true) {
@@ -2091,8 +2117,36 @@ var course_display = {
           23
         )} 00    00    00\n`;
         // console.log(this.body_list);
-        this.handle_input(null);
-
+        this.refresh();
+        //
+        if (i === 12 * current_page && current_page < number_pages) {
+          switch (key) {
+            case "Enter":
+              console.log(current_page);
+              this.body_list = "";
+              current_page += 1;
+              i = (current_page - 1) * 12;
+              if (course_limit <= current_page * 12) {
+                course_limit = array_potential_courses.length;
+              } else {
+                course_limit = current_page * 12;
+              }
+              this.refresh();
+              break;
+            default:
+              this.refresh();
+          }
+        } else if (
+          current_page === number_pages &&
+          i === array_potential_courses.length - 1
+        ) {
+          switch (key) {
+            case "Enter":
+              console.log("meraaaaa");
+              counter_done = true;
+          }
+        }
+        //
       }
     } else if (counter_display_all_section === false) {
       course_section_selected = course_list[curso_deseado];
@@ -2150,95 +2204,19 @@ var course_display = {
       if (formatted_prof_name.toString().length === 2) {
         formatted_prof_name = "";
       }
-      //
-      if (counter_display_all_section === false) {
-        this.body_list = `${pad_right(
-          course_section_selected["seccion"],
-          6
-        )}${pad_right(
-          course_section_selected["salon"].toString(),
-          8
-        )}${pad_right(formatted_horario, 19)}  ${pad_right(
-          course_section_selected["creditos"],
-          4
-        )} ${pad_right(formatted_prof_name.toUpperCase(), 23)} 00    00    00`;
-        console.log(this.body_list);
-        this.handle_input(null);
-      } else {
-        this.body_list = "";
-        this.handle_input(null);
-      }
-    }
-  },
-
-  handle_input: function (key) {
-    switch (key) {
-      case "Enter":
-        console.log(counter_display_all_section);
-        current_menu = course_display_2;
-        current_menu.refresh();
-        break;
-      default:
-        display(this, absolute_height - 2);
-    }
-  },
-};
-
-var course_display_2 = {
-  header: function () {
-    return header("*** HORARIO DE MATRICULA ***", false);
-  },
-
-  body: function () {
-    return `${" ".repeat(
-      21
-    )}<span class="white-background">ESTADO DE SECCIONES ${selected_term} 2020-2021</span>\n\n${pad_right(
-      `C u r s o:  ${curso_deseado
-        .slice(0, 8)
-        .replace(/(\w{4})/g, "$1 ")
-        .replace(/(^\s+|\s+$)/, "")}         ---> ${
-      course_list[curso_deseado]["nombre"]
-      }\n\nSec.  Salon    Periodos            Crd.  Profesor              Cap.  Uti.  Disp.\n----  -----    --------            ----  --------              ----  ----  -----\n060   Q 151  LWV     12:30- 1:20pm   3   ARNALDO CARRASQUIL J   33    33    00
-066   Q 125  MJ      12:30- 1:45pm   3   WANDA I. PEREZ MERCA   44    44    00
-070   Q 245  LWV      1:30- 2:20pm   3   JOSE CORTES FIGUEROA   54    54    00
-071   Q 151  LWV      1:30- 2:20pm   3   ARNALDO CARRASQUIL J   35    35    00
-081   Q 151  LWV      2:30- 3:20pm   3   BESSIE B. RIOS GONZA   34    34    00
-086   Q 350  MJ       2:00- 3:15pm   3   ARNALDO CARRASQUIL J   54    54    00
-087   Q 251  MJ       2:00- 3:15pm   3   WANDA I. PEREZ MERCA   54    54    00
-091   Q 151  LWV      3:30- 4:20pm   3   ARNALDO CARRASQUIL J   34    26    08
-096   Q 350  MJ       3:30- 4:45pm   3   ARNALDO CARRASQUIL J   54    54    00
-097   Q 251  MJ       3:30- 4:45pm   3   JORGE LABOY            54    42    12
-116   Q 350  MJ       5:00- 6:15pm   3   ARNALDO CARRASQUIL J   54    53    01
-117   Q 344  MJ       5:00- 6:15pm   3   ALBERTO SANTANA VARG   54    52    02
-
-`
-    )}`;
-  },
-
-  footer: function () {
-    return `<span class="white-background"><<<  Oprima Enter  >>>${" ".repeat(
-      47
-    )}[PF4=(9)Fin]</span>`;
-  },
-
-  reset_screen: function () {
-    this.buffer = "";
-    this.course_code = "";
-    this.footer_text = "";
-  },
-
-  refresh: function () {
-    display(this, absolute_height - 2);
-  },
-
-  handle_input: function (key) {
-    switch (key) {
-      case "Enter":
-        current_menu = course_selection;
-        current_menu.refresh();
-        break;
-      default:
-        this.refresh();
+      this.body_list = `${pad_right(
+        course_section_selected["seccion"],
+        6
+      )}${pad_right(course_section_selected["salon"].toString(), 8)}${pad_right(
+        formatted_horario,
+        19
+      )}  ${pad_right(course_section_selected["creditos"], 4)} ${pad_right(
+        formatted_prof_name.toUpperCase(),
+        23
+      )} 00    00    00`;
+      console.log(this.body_list);
+      this.refresh();
+      counter_done = true;
     }
   },
 };
