@@ -1978,6 +1978,7 @@ var section_selection = {
 };
 
 var course_display = {
+  current_page: 1,
   body_list: "",
   header: function () {
     return header("*** HORARIO DE MATRICULA ***", false);
@@ -2019,33 +2020,49 @@ var course_display = {
   },
 
   handle_input: function (key) {
-    if (counter_done === true) {
-      switch (key) {
-        case "Enter":
-          console.log("hfduihgdfgdfhgdfg");
-          current_menu = course_selection;
-          current_menu.handle_input(null);
-          current_menu.refresh();
-          counter_done = false;
-          return null;
-      }
+    if (counter_done === true && key === "Enter") {
+      current_menu = course_selection;
+      current_menu.handle_input(null);
+      current_menu.refresh();
+      counter_done = false;
+      return null;
     }
+
     this.body_list = "";
-    //counter_done=false;
-    console.log("ajaaaaaa");
+
     if (counter_display_all_section === true) {
-      let number_pages = Math.ceil(array_potential_courses.length / 12);
-      let current_page = 1;
-      let start_index = (current_page - 1) * 12;
-      let course_limit = 12; //
-      if (array_potential_courses.length < 12) {
-        course_limit = array_potential_courses.length;
-        counter_done = true;
+
+      const course_limit = 12;
+      const number_pages = Math.ceil(array_potential_courses.length / course_limit);
+
+      // Change page if necessary
+      if (key === "Enter" && this.current_page < number_pages) {
+        this.current_page += 1;
+        console.log(this.current_page);
+      } else if (key === "Enter" && this.current_page === number_pages) {
+        this.current_page = 1;
+        counter_done = false;
+
+        current_menu = course_selection;
+        current_menu.handle_input(null);
+        current_menu.refresh();
+
+        return null;
       }
-      for (let i = start_index; i < course_limit; i++) {
-        console.log("okokok");
-        console.log(i);
-        console.log(course_limit);
+
+      // Prepare indices for courses to be displayed
+      let start_index = (this.current_page - 1) * course_limit;
+      let end_index = Math.min(
+        this.current_page * course_limit,
+        array_potential_courses.length
+      );
+
+      // Perform display
+      console.log("Start index: " + start_index);
+      console.log("End index: " + end_index);
+      for (let i = start_index; i < end_index; i++) {
+        console.log("Index: " + i);
+
         course_section_selected = course_list[array_potential_courses[i]];
         //
         counter_horario = false; //last fix
@@ -2057,24 +2074,16 @@ var course_display = {
 
         //////////
         prof_names = course_section_selected["profesor"].toString();
-        if (
-          WhiteSpace_counter(course_section_selected["profesor"].toString()) >=
-          3
-        ) {
-          prof_names = prof_names.replace(" ", ".");
-          //console.log(prof_names);
-        }
 
-        if (
-          WhiteSpace_counter(course_section_selected["profesor"].toString()) >=
-          3
-        ) {
+        if (WhiteSpace_counter(course_section_selected["profesor"].toString()) >= 3) {
+          prof_names = prof_names.replace(" ", ".");
           prof_names = prof_names.split(" ");
         } else {
           prof_names = course_section_selected["profesor"]
             .toString()
             .split(" ");
         }
+
         /////////
         let formatted_prof_name = `${prof_names
           .slice(1)
@@ -2122,41 +2131,11 @@ var course_display = {
           formatted_prof_name.toUpperCase(),
           23
         )} 00    00    00\n`;
-        // console.log(this.body_list);
-        this.refresh();
-        //
-        if (i === 12 * current_page - 1 && current_page < number_pages) {
-          switch (key) {
-            case "Enter":
-              console.log(current_page);
-              this.body_list = "";
-              current_page += 1;
-              i = (current_page - 1) * 12;
-              if (array_potential_courses.length <= current_page * 12) {
-                course_limit = array_potential_courses.length;
-              } else {
-                console.log(`course_limit=${course_limit}`);
-                course_limit = current_page * 12;
-              }
-              this.refresh();
 
-              break;
-            default:
-              this.refresh();
-          }
-        } else if (
-          current_page === number_pages &&
-          i === array_potential_courses.length - 1
-        ) {
-          console.log("NOOOOOOOOOOO");
-          switch (key) {
-            case "Enter":
-              console.log("meraaaaa");
-              counter_done = true;
-          }
-        }
-        //
       }
+
+      this.refresh();
+
     } else if (counter_display_all_section === false) {
       course_section_selected = course_list[curso_deseado];
       //
