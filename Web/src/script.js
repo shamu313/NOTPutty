@@ -49,6 +49,7 @@ var course_list = {};
 var course_exist = "";
 var curso_deseado = "";
 var array_potential_courses = [];
+var counter_display_all_section = true;
 var selected_courses = {
   "1er Sem": [],
   "2do Sem": [
@@ -343,7 +344,6 @@ function WhiteSpace_counter(string) {
     if (string[i] == " ") {
       counter_WhiteSpace++;
     }
-    console.log(counter_WhiteSpace);
   }
   return counter_WhiteSpace;
 }
@@ -1859,6 +1859,7 @@ var course_selection = {
   },
 
   handle_input: function (key) {
+    counter_display_all_section = true;
     if (typeof key === "string" && key !== "Enter") {
       // If <Backspace> or <Delete> are pressed
       if (key === "Backspace" || key === "Delete") {
@@ -1953,6 +1954,7 @@ var section_selection = {
           for (let i = 0; i <= array_potential_courses.length; i++) {
             if (curso_deseado === array_potential_courses[i]) {
               current_menu = course_display;
+              counter_display_all_section = false;
               this.reset_screen();
               current_menu.refresh();
               break;
@@ -1968,6 +1970,7 @@ var section_selection = {
 };
 
 var course_display = {
+  body_list: "",
   header: function () {
     return header("*** HORARIO DE MATRICULA ***", false);
   },
@@ -1980,20 +1983,11 @@ var course_display = {
         .slice(0, 8)
         .replace(/(\w{4})/g, "$1 ")
         .replace(/(^\s+|\s+$)/, "")}         ---> ${
-      course_list[curso_deseado]["nombre"]
-      }\n\nSec.  Salon    Periodos            Crd.  Profesor              Cap.  Uti.  Disp.\n----  -----    --------            ----  --------              ----  ----  -----\n010   Q 251  LWV      7:30- 8:20     3   JORGE LABOY            54    52    02
-011   Q 350  LWV      7:30- 8:20     3   FRANCIS B PATRON GEO   54    53    01
-016   Q 344  MJ       7:30- 8:45     3   NAIRMEN MINA CAMILDE   55    55    00
-017   Q 245  MJ       7:30- 8:45     3   MARIA GUNTIN BURGOS    55    55    00
-021   Q 350  LWV      8:30- 9:20     3   FRANCIS B PATRON GEO   53    53    00
-022   Q 251  LWV      8:30- 9:20     3   JOSE CORTES FIGUEROA   54    54    00
-031   Q 350  LWV      9:30-10:20     3   VERONICA SANCHEZ MUN   54    54    00
-036   Q 245  MJ       9:00-10:15     3   MARIA GUNTIN BURGOS    55    55    00
-040   Q 350  LWV     10:30-11:20     3   VERONICA SANCHEZ MUN   54    54    00
-041   Q 245  LWV     10:30-11:20     3   JOSE CORTES FIGUEROA   54    54    00
-050   Q 245  LWV     11:30-12:20pm   3   JOSE CORTES FIGUEROA   54    54    00
-051   Q 350  LWV     11:30-12:20pm   3   VERONICA SANCHEZ MUN   54    55    01-
 
+      course_list[curso_deseado]["nombre"]
+      }\n\nSec.  Salon    Periodos            Crd.  Profesor               Cap.  Uti.  Disp.\n----  -----    --------            ----  --------               ----  ----  -----\n${
+      this.body_list
+      }
 `
     )}`;
   },
@@ -2011,128 +2005,181 @@ var course_display = {
   },
 
   refresh: function () {
-    display(this, absolute_height - 2);
+    //console.log(array_potential_courses.length);
+    if (counter_display_all_section === true) {
+      //number_pages=Math.ceil(array_potential_courses.length/14);
+      for (i = 0; i <= array_potential_courses.length; i++) {
+        course_section_selected = course_list[array_potential_courses[i]];
+        //
+        counter_horario = 0; //last fix
+        if (course_section_selected["horario"].length === 0) {
+          counter_horario = true; //last fix
+          course_section_selected["horario"][0] = "7:30 AM - 8:20 AM LMWJ";
+        }
+
+        //////////
+        prof_names = course_section_selected["profesor"].toString();
+        if (
+          WhiteSpace_counter(course_section_selected["profesor"].toString()) >=
+          3
+        ) {
+          prof_names = prof_names.replace(" ", ".");
+          console.log(prof_names);
+        }
+        if (
+          WhiteSpace_counter(course_section_selected["profesor"].toString()) >=
+          3
+        ) {
+          prof_names = prof_names.split(" ");
+        } else {
+          prof_names = course_section_selected["profesor"]
+            .toString()
+            .split(" ");
+        }
+        /////////
+        let formatted_prof_name = `${prof_names
+          .slice(1)
+          .toString()
+          .replace(",", " ")}, ${prof_names[0]}`;
+        formatted_prof_name = truncate(formatted_prof_name, 22);
+
+        const current_itinerary = course_section_selected["horario"][0];
+        const [start, end, days] = parse_itinerary(current_itinerary);
+        let start_time = format_date(start)[0];
+        end_time = format_date(end)[0].replace(/ /g, "");
+        start_time = start_time.replace(/ (?:am|pm)/, "");
+        if (counter_horario === true) {
+          formatted_horario = " ".repeat(20); //last fix
+        } else {
+          if (end_time.length === 6) {
+            end_time = " " + end_time;
+          }
+          //last fix
+          formatted_horario =
+            pad_right(days.toUpperCase(), 6) +
+            pad_right(start_time, 4) +
+            "-" +
+            pad_right(end_time, 8);
+        }
+        //
+        if (formatted_horario.length === 0) {
+          formatted_horario = "";
+        }
+        if (formatted_prof_name.toString().length === 2) {
+          formatted_prof_name = "";
+        }
+        //
+        if (counter_display_all_section === false) {
+          this.body_list = `${pad_right(
+            course_section_selected["seccion"],
+            6
+          )}${pad_right(
+            course_section_selected["salon"].toString(),
+            8
+          )}${pad_right(formatted_horario, 19)}  ${pad_right(
+            course_section_selected["creditos"],
+            4
+          )} ${pad_right(
+            formatted_prof_name.toUpperCase(),
+            23
+          )} 00    00    00`;
+          console.log(this.body_list);
+          this.handle_input(null);
+        } else {
+          this.body_list = "";
+          this.handle_input(null);
+        }
+      }
+    } else if (counter_display_all_section === false) {
+      course_section_selected = course_list[curso_deseado];
+      //
+      counter_horario = 0; //last fix
+      if (course_section_selected["horario"].length === 0) {
+        counter_horario = true; //last fix
+        course_section_selected["horario"][0] = "7:30 AM - 8:20 AM LMWJ";
+      }
+
+      //////////
+      prof_names = course_section_selected["profesor"].toString();
+      if (
+        WhiteSpace_counter(course_section_selected["profesor"].toString()) >= 3
+      ) {
+        prof_names = prof_names.replace(" ", ".");
+        console.log(prof_names);
+      }
+      if (
+        WhiteSpace_counter(course_section_selected["profesor"].toString()) >= 3
+      ) {
+        prof_names = prof_names.split(" ");
+      } else {
+        prof_names = course_section_selected["profesor"].toString().split(" ");
+      }
+      /////////
+      let formatted_prof_name = `${prof_names
+        .slice(1)
+        .toString()
+        .replace(",", " ")}, ${prof_names[0]}`;
+      formatted_prof_name = truncate(formatted_prof_name, 22);
+
+      const current_itinerary = course_section_selected["horario"][0];
+      const [start, end, days] = parse_itinerary(current_itinerary);
+      let start_time = format_date(start)[0];
+      end_time = format_date(end)[0].replace(/ /g, "");
+      start_time = start_time.replace(/ (?:am|pm)/, "");
+      if (counter_horario === true) {
+        formatted_horario = " ".repeat(20); //last fix
+      } else {
+        if (end_time.length === 6) {
+          end_time = " " + end_time;
+        }
+        //last fix
+        formatted_horario =
+          pad_right(days.toUpperCase(), 6) +
+          pad_right(start_time, 4) +
+          "-" +
+          pad_right(end_time, 8);
+      }
+      //
+      if (formatted_horario.length === 0) {
+        formatted_horario = "";
+      }
+      if (formatted_prof_name.toString().length === 2) {
+        formatted_prof_name = "";
+      }
+      //
+      if (counter_display_all_section === false) {
+        this.body_list = `${pad_right(
+          course_section_selected["seccion"],
+          6
+        )}${pad_right(
+          course_section_selected["salon"].toString(),
+          8
+        )}${pad_right(formatted_horario, 19)}  ${pad_right(
+          course_section_selected["creditos"],
+          4
+        )} ${pad_right(formatted_prof_name.toUpperCase(), 23)} 00    00    00`;
+        console.log(this.body_list);
+        this.handle_input(null);
+      } else {
+        this.body_list = "";
+        this.handle_input(null);
+      }
+    }
   },
 
   handle_input: function (key) {
     switch (key) {
       case "Enter":
+        console.log(counter_display_all_section);
         current_menu = course_display_2;
         current_menu.refresh();
         break;
       default:
-        this.refresh();
+        display(this, absolute_height - 2);
     }
   },
 };
 
-var course_display_2 = {
-  header: function () {
-    return header("*** HORARIO DE MATRICULA ***", false);
-  },
-
-  body: function () {
-    return `${" ".repeat(
-      21
-    )}<span class="white-background">ESTADO DE SECCIONES ${selected_term} 2020-2021</span>\n\n${pad_right(
-      `C u r s o:  ${curso_deseado
-        .slice(0, 8)
-        .replace(/(\w{4})/g, "$1 ")
-        .replace(/(^\s+|\s+$)/, "")}         ---> ${
-      course_list[curso_deseado]["nombre"]
-      }\n\nSec.  Salon    Periodos            Crd.  Profesor              Cap.  Uti.  Disp.\n----  -----    --------            ----  --------              ----  ----  -----\n060   Q 151  LWV     12:30- 1:20pm   3   ARNALDO CARRASQUIL J   33    33    00
-066   Q 125  MJ      12:30- 1:45pm   3   WANDA I. PEREZ MERCA   44    44    00
-070   Q 245  LWV      1:30- 2:20pm   3   JOSE CORTES FIGUEROA   54    54    00
-071   Q 151  LWV      1:30- 2:20pm   3   ARNALDO CARRASQUIL J   35    35    00
-081   Q 151  LWV      2:30- 3:20pm   3   BESSIE B. RIOS GONZA   34    34    00
-086   Q 350  MJ       2:00- 3:15pm   3   ARNALDO CARRASQUIL J   54    54    00
-087   Q 251  MJ       2:00- 3:15pm   3   WANDA I. PEREZ MERCA   54    54    00
-091   Q 151  LWV      3:30- 4:20pm   3   ARNALDO CARRASQUIL J   34    26    08
-096   Q 350  MJ       3:30- 4:45pm   3   ARNALDO CARRASQUIL J   54    54    00
-097   Q 251  MJ       3:30- 4:45pm   3   JORGE LABOY            54    42    12
-116   Q 350  MJ       5:00- 6:15pm   3   ARNALDO CARRASQUIL J   54    53    01
-117   Q 344  MJ       5:00- 6:15pm   3   ALBERTO SANTANA VARG   54    52    02
-
-`
-    )}`;
-  },
-
-  footer: function () {
-    return `<span class="white-background"><<<  Oprima Enter  >>>${" ".repeat(
-      47
-    )}[PF4=(9)Fin]</span>`;
-  },
-
-  reset_screen: function () {
-    this.buffer = "";
-    this.course_code = "";
-    this.footer_text = "";
-  },
-
-  refresh: function () {
-    display(this, absolute_height - 2);
-  },
-
-  handle_input: function (key) {
-    switch (key) {
-      case "Enter":
-        current_menu = course_display_3;
-        current_menu.refresh();
-        break;
-      default:
-        this.refresh();
-    }
-  },
-};
-
-var course_display_3 = {
-  header: function () {
-    return header("*** HORARIO DE MATRICULA ***", false);
-  },
-
-  body: function () {
-    return `${" ".repeat(
-      21
-    )}<span class="white-background">ESTADO DE SECCIONES ${selected_term} 2020-2021</span>\n\n${pad_right(
-      `C u r s o:  ${curso_deseado
-        .slice(0, 8)
-        .replace(/(\w{4})/g, "$1 ")
-        .replace(/(^\s+|\s+$)/, "")}         ---> ${
-      course_list[curso_deseado]["nombre"]
-      }\n\nSec.  Salon    Periodos            Crd.  Profesor              Cap.  Uti.  Disp.\n----  -----    --------            ----  --------              ----  ----  -----\n
-                     * Totales: QUIM 3132     24 secciones    1208  1183    25
-
-`
-    )}`;
-  },
-
-  footer: function () {
-    return `<span class="white-background"><<<  Oprima Enter  >>>${" ".repeat(
-      47
-    )}[PF4=(9)Fin]</span>`;
-  },
-
-  reset_screen: function () {
-    this.buffer = "";
-    this.course_code = "";
-    this.footer_text = "";
-  },
-
-  refresh: function () {
-    display(this, absolute_height - 2);
-  },
-
-  handle_input: function (key) {
-    switch (key) {
-      case "Enter":
-        current_menu = course_selection;
-        current_menu.refresh();
-        break;
-      default:
-        this.refresh();
-    }
-  },
-};
 
 /***
  *       __ __             __    ____      ____          __       ___  ____        _      __
